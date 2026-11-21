@@ -8,7 +8,7 @@
   width: 160rpx;
   height: 160rpx;
   border-radius: 80rpx;
-  background: #eaf0ff;
+  background: #e7f3ed;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,12 +20,12 @@
 .empty-title {
   font-size: 33rpx;
   font-weight: 600;
-  color: #1b2138;
+  color: #242922;
   margin-top: 31rpx;
 }
 .empty-sub {
   font-size: 25rpx;
-  color: #8a93a8;
+  color: #8c8a80;
   margin-top: 12rpx;
   text-align: center;
 }
@@ -33,7 +33,7 @@
   margin-top: 38rpx;
   height: 84rpx;
   padding: 0 60rpx;
-  background: #3d6ff5;
+  background: #2f8f6b;
   color: #ffffff;
   border-radius: 27rpx;
   display: flex;

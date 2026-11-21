@@ -61,7 +61,7 @@
   border-radius: var(--r-card);
   padding: 23rpx 31rpx;
 }
-.tip-text { font-size: var(--fs-indicator); line-height: 40rpx; color: #4A5675; }
+.tip-text { font-size: var(--fs-indicator); line-height: 40rpx; color: #5c5a50; }
 
 /* 在线客服按钮 */
 .contact-btn {

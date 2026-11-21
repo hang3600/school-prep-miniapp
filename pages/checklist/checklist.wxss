@@ -72,7 +72,7 @@
   width: 42rpx;
   height: 42rpx;
   border-radius: 12rpx;
-  border: 3rpx solid #c9d3e6;
+  border: 3rpx solid #d8d5c9;
   background: #ffffff;
   display: flex;
   align-items: center;
@@ -81,7 +81,7 @@
 }
 .checkbox.checked { background: var(--brand); border-color: var(--brand); }
 /* 三态中间档「已备好」：品牌色浅底 + 圆点（区别于空态与打勾全态） */
-.checkbox.half { background: rgba(61, 111, 245, 0.14); border-color: var(--brand); }
+.checkbox.half { background: rgba(47, 143, 107, 0.14); border-color: var(--brand); }
 .check-dot { width: 16rpx; height: 16rpx; border-radius: 50%; background: var(--brand); }
 .check-ic { width: 28rpx; height: 28rpx; }
 .item-name { margin-left: 20rpx; font-size: var(--fs-body); color: var(--ink); min-width: 0; }
@@ -138,8 +138,8 @@
 /* ===== 全部装包完成卡（收尾仪式感 + 复制/分享引导） ===== */
 .done-card {
   margin-top: 23rpx;
-  background: #f2f7ff;
-  border: 2rpx solid #d8e6ff;
+  background: #f7f6f1;
+  border: 2rpx solid #e7f3ed;
   border-radius: var(--r-card);
   padding: 31rpx;
   box-shadow: var(--shadow-1);

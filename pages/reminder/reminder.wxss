@@ -107,7 +107,7 @@
   padding: 27rpx 31rpx;
 }
 .tip-title { font-size: var(--fs-sub); font-weight: 600; color: var(--brand-deep); display: block; margin-bottom: 8rpx; }
-.tip-text { font-size: var(--fs-indicator); line-height: 40rpx; color: #4A5675; }
+.tip-text { font-size: var(--fs-indicator); line-height: 40rpx; color: #5c5a50; }
 
 /* ===== 按压反馈过渡 ===== */
 .cc-btn {

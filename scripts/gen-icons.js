@@ -1,5 +1,6 @@
 // 从 design-tokens.json 生成全部图标 SVG 文件到 images/icons/
 // 设计稿每个图标均给出 24×24 viewBox 的精确 path，零 emoji。
+// 颜色全部取自令牌真源，避免图标与 CSS 主题脱节。
 const fs = require('fs');
 const path = require('path');
 
@@ -18,10 +19,10 @@ function writeSvg(name, viewBox, fill, inner) {
 const ic = tokens.icons;
 const made = [];
 
-// Tab 图标：选中白 / 未选灰 两态
+// Tab 图标：选中白 / 未选灰 两态（颜色取自令牌）
 ['list', 'category', 'progress', 'user'].forEach((k) => {
   const v = ic[k];
-  made.push(writeSvg('ic-' + k + '-gray', v.viewBox, '#8A93A8', v.variants.gray));
+  made.push(writeSvg('ic-' + k + '-gray', v.viewBox, ic.tabInactiveFill, v.variants.gray));
   made.push(writeSvg('ic-' + k + '-white', v.viewBox, '#FFFFFF', v.variants.white));
 });
 

@@ -5,31 +5,35 @@
    ============================================================ */
 page {
   /* ===== 颜色 ===== */
-  --brand: #3D6FF5;
-  --brand-deep: #2B57D4;
-  --gray: #8A93A8;
-  --ink: #1B2138;
-  --ink-2: #5A6478;      /* 次级正文（分类说明等），category.wxss 引用，勿删 */
-  --bg: #F4F6FC;
-  --border: #ECEFFB;
+  --brand: #2F8F6B;
+  --brand-deep: #247454;
+  --brand-soft: #E7F3ED;    /* 浅绿底：选中态 / 图标底 */
+  --accent: #F2A65A;        /* 暖橙点缀：命中 / 进行中 / 激励 */
+  --accent-soft: #FDF1E5;  /* 暖橙浅底：搜索提示条 / 数码类目 */
+  --accent-deep: #B5702E;  /* 暖橙深：浅底上的文字 */
+  --gray: #8C8A80;
+  --ink: #242922;
+  --ink-2: #5C5A50;      /* 次级正文（分类说明等），category.wxss 引用，勿删 */
+  --bg: #F7F6F1;
+  --border: #E6E4DB;
   --error-tint: #FFEAE0;
   --error-accent: #FF7A45;
   --white: #FFFFFF;
-  --skeleton: #ECEFFB;
-  --success: #2BC48A;
+  --skeleton: #EFEDE5;
+  --success: #2F8F6B;
 
   /* 类目底色（7 宫格 / 分类页，与 utils/categories.js 的 tint 保持一致） */
-  --tint-id: #EAF0FF;
+  --tint-id: #E7F3ED;
   --tint-soap: #E6F7EE;
   --tint-book: #FFF4DC;
   --tint-bed: #F0EBFF;
-  --tint-laptop: #FFEDD9;
+  --tint-laptop: #FDF1E5;
   --tint-shirt: #FFEAF1;
   --tint-mil: #FFE4E1;
 
-  /* 软蓝（图标底 / 头像底） */
-  --soft-blue: #EAF0FF;
-  --soft-blue-deep: #DCE7FF;
+  /* 品牌浅绿（图标底 / 头像底） */
+  --soft-blue: #E7F3ED;
+  --soft-blue-deep: #CDE9DC;
 
   /* ===== 圆角（pt × 1.923） ===== */
   --r-card: 31rpx;
@@ -67,7 +71,7 @@ page {
   --shadow-tab: 0 -8rpx 31rpx rgba(0, 0, 0, 0.10);   /* TabBar（向上） */
 
   /* ===== 页面背景微渐变 ===== */
-  --bg-grad: linear-gradient(180deg, #FBFDFF 0%, #F4F6FC 100%);
+  --bg-grad: linear-gradient(180deg, #FBF9F3 0%, #F7F6F1 100%);
 
   /* 更纱黑体需 wx.loadFontFace 引入（见 app.js）；未加载时回退 PingFang SC */
   --font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Sarasa Gothic SC", sans-serif;

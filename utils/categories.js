@@ -8,14 +8,14 @@
  */
 
 const CATEGORIES = [
-  { key: 'id', label: '证件材料', tint: '#EAF0FF', desc: '身份证 · 录取通知书 · 户口本' },
+  { key: 'id', label: '证件材料', tint: '#E7F3ED', desc: '身份证 · 录取通知书 · 户口本' },
   { key: 'soap', label: '生活用品', tint: '#E6F7EE', desc: '洗漱 · 收纳 · 日常' },
   { key: 'book', label: '学习用品', tint: '#FFF4DC', desc: '文具 · 书籍 · 笔记本' },
   // 注意语义边界：本分类只放床品 / 寝室用品（床单、被褥、蚊帐、凉席、床垫），
   // 「衣物鞋包」由 shirt 分类承载。旧文案「宿舍衣物 / 床品·衣物·鞋包」与 shirt 重叠，
   // 用户点进来发现全是床品会困惑，故改为语义无歧义的「床品寝室」。
   { key: 'bed', label: '床品寝室', tint: '#F0EBFF', desc: '被褥 · 蚊帐 · 凉席' },
-  { key: 'laptop', label: '数码电子', tint: '#FFEDD9', desc: '电脑 · 充电 · 配件' },
+  { key: 'laptop', label: '数码电子', tint: '#FDF1E5', desc: '电脑 · 充电 · 配件' },
   { key: 'shirt', label: '衣物鞋包', tint: '#FFEAF1', desc: '当季衣物 · 鞋帽' },
   { key: 'mil', label: '军训用品', tint: '#FFE4E1', desc: '防晒 · 防暑 · 鞋垫' }
 ];

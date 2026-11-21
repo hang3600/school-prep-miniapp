@@ -54,7 +54,7 @@
             <text class="set-label">每日提醒</text>
             <text class="set-desc">到点后打开小程序，会提醒你打卡</text>
           </view>
-          <switch checked="{{enabled}}" color="#3D6FF5" bindchange="onToggleRemind" />
+          <switch checked="{{enabled}}" color="#2F8F6B" bindchange="onToggleRemind" />
         </view>
 
         <picker mode="selector" range="{{hours}}" value="{{hourIndex}}" bindchange="onHourChange">

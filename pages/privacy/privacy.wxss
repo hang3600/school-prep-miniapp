@@ -4,12 +4,12 @@
   padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
   min-height: 100vh;
   box-sizing: border-box;
-  background: #F4F6FC;
+  background: #f7f6f1;
 }
 .h {
   font-size: 38rpx;
   font-weight: 600;
-  color: #1A1A1A;
+  color: #242922;
   margin-bottom: 24rpx;
 }
 .section {
@@ -24,10 +24,10 @@
 .p {
   font-size: var(--fs-body);
   line-height: 46rpx;
-  color: #4A4F57;
+  color: #5c5a50;
 }
 .em {
-  color: #1A1A1A;
+  color: #242922;
   font-weight: 500;
 }
 .official {

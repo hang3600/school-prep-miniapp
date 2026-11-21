@@ -4,7 +4,7 @@ const share = require('../../utils/share.js');
 const { CATEGORIES } = require('../../utils/categories.js');
 
 const STAGES = [
-  { key: 'college', label: '大学', short: '大', desc: '住校用品齐全', color: '#3D6FF5' },
+  { key: 'college', label: '大学', short: '大', desc: '住校用品齐全', color: '#2F8F6B' },
   { key: 'high', label: '高中', short: '高', desc: '走读 / 住校', color: '#FAAD14' },
   { key: 'middle', label: '初中', short: '初', desc: '日常走读', color: '#52C41A' },
   { key: 'primary', label: '小学', short: '小', desc: '家长代劳', color: '#EAA7B2' }

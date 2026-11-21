@@ -22,7 +22,7 @@
 .title {
   font-size: 34rpx;
   font-weight: 600;
-  color: #1A1A1A;
+  color: #242922;
   text-align: center;
   margin-bottom: 20rpx;
 }
@@ -30,11 +30,11 @@
   flex: 1;
   font-size: 26rpx;
   line-height: 44rpx;
-  color: #4A4F57;
+  color: #5c5a50;
   max-height: 420rpx;
 }
 .link {
-  color: #3D6FF5;
+  color: #2f8f6b;
 }
 .btns {
   display: flex;
@@ -49,11 +49,11 @@
   font-size: 28rpx;
 }
 .btn.cancel {
-  background: #F2F4F8;
-  color: #6B7077;
+  background: #f0efe9;
+  color: #8c8a80;
 }
 .btn.ok {
-  background: #3D6FF5;
+  background: #2f8f6b;
   color: #fff;
   /* 重置 button 默认样式，使其与相邻的 view 按钮视觉一致 */
   margin: 0;

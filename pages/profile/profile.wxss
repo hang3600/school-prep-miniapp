@@ -16,7 +16,7 @@
 
 /* 头像卡 */
 .profile-card {
-  background: linear-gradient(135deg, #eaf0ff 0%, #dce7ff 100%);
+  background: linear-gradient(135deg, #e7f3ed 0%, #cde9dc 100%);
   border-radius: var(--r-card);
   padding: 38rpx;
   display: flex;
@@ -107,7 +107,7 @@
 }
 
 /* 触感反馈 */
-.menu-item:active { background: #F5F7FB; }
+.menu-item:active { background: #f7f6f1; }
 .logout:active { opacity: 0.75; }
 
 /* ===== 按压反馈过渡 ===== */

@@ -22,7 +22,7 @@ App({
     // 分类元数据（7 大分类含军训）单一数据源见 utils/categories.js，
     // 由 home / category / checklist / add-item-sheet 各自 require，此处不再维护副本。
     // 隐私合规相关（微信 2023 起强制）
-    brand: '#3D6FF5',
+    brand: '#2F8F6B',
     // SEO：由顶部 require 兜底注入，供各页面 onLoad 调用
     applyPageMeta: seoApplyPageMeta,
     // 由 privacy-popup 组件在 attached 时挂载自身，便于 onNeedPrivacyAuthorization 直接驱动

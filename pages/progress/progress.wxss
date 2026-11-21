@@ -104,10 +104,10 @@
   overflow: hidden;
 }
 .cat-fill { height: 100%; background: var(--brand); border-radius: 8rpx; }
-.cat-sub { display: block; margin-top: 10rpx; font-size: 22rpx; color: #a7b0c2; }
+.cat-sub { display: block; margin-top: 10rpx; font-size: 22rpx; color: #a7a398; }
 .cat-row.done .cat-sub { color: #36a96b; }
 .cat-check { width: 40rpx; height: 40rpx; flex-shrink: 0; }
-.cat-arrow { font-size: 40rpx; color: #c2cad6; flex-shrink: 0; line-height: 1; }
+.cat-arrow { font-size: 40rpx; color: #d8d5c9; flex-shrink: 0; line-height: 1; }
 
 /* 成就 */
 .badge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 23rpx; }
@@ -121,7 +121,7 @@
   gap: 10rpx;
   box-shadow: var(--shadow-1);
 }
-.badge-cell.locked { background: #eff3f7; }
+.badge-cell.locked { background: #f0efe9; }
 .badge-icon {
   width: 80rpx;
   height: 80rpx;
@@ -131,9 +131,9 @@
   align-items: center;
   justify-content: center;
 }
-.badge-cell.locked .badge-icon { background: #dfe6ee; }
+.badge-cell.locked .badge-icon { background: #e6e4db; }
 .badge-img { width: 46rpx; height: 46rpx; }
 .badge-cell.locked .badge-img { opacity: 0.4; }
 .badge-name { font-size: var(--fs-indicator); font-weight: 600; color: var(--ink); text-align: center; }
 .badge-state { font-size: 21rpx; color: var(--gray); }
-.badge-cell.locked .badge-state { color: #9aa7b8; }
+.badge-cell.locked .badge-state { color: #a7a398; }

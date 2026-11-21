@@ -11,16 +11,16 @@
     "pages/about/about"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#3D6FF5",
+    "navigationBarBackgroundColor": "#2F8F6B",
     "navigationBarTitleText": "开学准备清单",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#F4F6FC",
+    "backgroundColor": "#F7F6F1",
     "enablePullDownRefresh": false
   },
   "tabBar": {
     "custom": true,
-    "color": "#8A93A8",
-    "selectedColor": "#3D6FF5",
+    "color": "#8C8A80",
+    "selectedColor": "#2F8F6B",
     "backgroundColor": "#FFFFFF",
     "list": [
       { "pagePath": "pages/home/home", "text": "清单" },
