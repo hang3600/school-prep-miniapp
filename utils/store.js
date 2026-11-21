@@ -223,15 +223,44 @@ function buildSeed() {
       lists[stage][cat] = seedItems(stage, cat);
     });
   });
-  return { stage: 'college', lists };
+  // 新用户种子已按 STAGE_EXCLUDE 过滤，直接带迁移标记，避免多一次空跑写盘
+  return { stage: 'college', stageExcludeV1: true, lists };
 }
 
 // 老版本数据迁移（有变更返回 true，由 read() 决定回写）：
 // ① item.done:Boolean → item.status（true → 2 已装包）
 // ② 种子增量补全：缺整个分类（如老数据的军训）全量补种；已有分类只追加
 //    「序号 ≥ LEGACY_SEED_COUNTS」的新种子——用户删过的旧种子不会复活。
+// ③ 一次性学段清单清理（stageExcludeV1）：剔除老用户清单里不适合该学段的
+//    种子物品（如小学的笔记本电脑、军训腰带）。带版本标记，只跑一次；
+//    只删种子项（s_ 前缀），用户自定义的同名物品（c_ 前缀）永远保留。
+//    取舍：会丢失这些物品的勾选状态——换取「分学段」卖点对老用户也成立。
 function migrate(state) {
   let touched = false;
+
+  // ③ 一次性学段清理：只执行一次，执行后打标记永久跳过
+  if (!state.stageExcludeV1) {
+    STAGE_KEYS.forEach((stage) => {
+      const list = state.lists[stage];
+      if (!list) return;
+      const exclude = STAGE_EXCLUDE[stage] || {};
+      CAT_KEYS.forEach((cat) => {
+        const names = exclude[cat];
+        const arr = list[cat];
+        if (!names || !names.length || !arr) return;
+        const kept = arr.filter((it) =>
+          !((typeof it.id === 'string' && it.id.indexOf('s_') === 0) && names.indexOf(it.name) !== -1)
+        );
+        if (kept.length !== arr.length) {
+          list[cat] = kept; // 只删种子项，自定义同名物品（c_ 前缀）保留
+          touched = true;
+        }
+      });
+    });
+    state.stageExcludeV1 = true;
+    touched = true;
+  }
+
   STAGE_KEYS.forEach((stage) => {
     const list = state.lists[stage];
     if (!list) return;

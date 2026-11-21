@@ -338,6 +338,52 @@ function run() {
     assert('老用户自动补全新种子', idList.length > 2);
     assert('迁移后序号锚点不变', idList[0].name === '身份证');
   }
+
+  // ---------- 13. 一次性学段清理（stageExcludeV1）----------
+  {
+    const oldState = {
+      stage: 'primary',
+      stageChosen: true,
+      lists: {
+        primary: {
+          laptop: [
+            { id: 's_primary_laptop_0', name: '笔记本电脑', must: true, status: 2 },
+            { id: 's_primary_laptop_2', name: '插线板', must: true, status: 1 },
+            { id: 's_primary_laptop_3', name: '充电宝', must: true, status: 2 },
+            { id: 'c_12345_1', name: '笔记本电脑', must: false, status: 1 }
+          ],
+          mil: [
+            { id: 's_primary_mil_8', name: '腰带（配军训服）', must: false, status: 2 },
+            { id: 's_primary_mil_0', name: '防晒霜（SPF50+）', must: true, status: 1 }
+          ]
+        }
+      }
+    };
+    const base = makeState({ storage: { schoolprep_v1: oldState } });
+    const env = makeEnv(base);
+    const store = env.load('utils/store.js');
+
+    const lap = store.getChecklist('primary', 'laptop');
+    const mil = store.getChecklist('primary', 'mil');
+    assert('清理: 小学种子笔记本电脑已删', !lap.some((x) => x.id === 's_primary_laptop_0'));
+    assert('清理: 小学种子插线板已删', !lap.some((x) => x.id === 's_primary_laptop_2'));
+    assert('清理: 小学种子军训腰带已删', !mil.some((x) => x.id === 's_primary_mil_8'));
+    assert('清理: 非排除种子保留且勾选不变', (lap.find((x) => x.id === 's_primary_laptop_3') || {}).status === 2);
+    assert('清理: 未排除的军训物品保留', (mil.find((x) => x.id === 's_primary_mil_0') || {}).status === 1);
+    assert('清理: 用户自定义同名物品保留', (lap.find((x) => x.id === 'c_12345_1') || {}).name === '笔记本电脑');
+    assert('清理: 被删项未被增量补种回灌', !lap.some((x) => x.name === '插线板' && x.id.indexOf('s_') === 0));
+    assert('清理: 迁移标记已写入', base.storage.schoolprep_v1.stageExcludeV1 === true);
+
+    // 幂等：标记已打后，即使 storage 里再出现同名种子项也不再清理
+    base.storage.schoolprep_v1.lists.primary.laptop.push(
+      { id: 's_primary_laptop_0', name: '笔记本电脑', must: true, status: 0 }
+    );
+    store.clearCache();
+    const env2 = makeEnv(base);
+    const store2 = env2.load('utils/store.js');
+    assert('清理幂等: 二次迁移不重复删除',
+      store2.getChecklist('primary', 'laptop').some((x) => x.id === 's_primary_laptop_0'));
+  }
 }
 
 module.exports = { run, name: 'store' };
