@@ -81,7 +81,7 @@
   width: 60rpx;
   height: 60rpx;
   border-radius: 30rpx;
-  background: var(--soft-blue);
+  background: var(--brand-soft);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -40,7 +40,7 @@
   width: 69rpx;
   height: 69rpx;
   border-radius: var(--r-iconbg);
-  background: var(--soft-blue);
+  background: var(--brand-soft);
   display: flex;
   align-items: center;
   justify-content: center;

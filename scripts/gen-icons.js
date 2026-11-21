@@ -32,13 +32,13 @@ const made = [];
   made.push(writeSvg('ic-' + k, v.viewBox, v.fill, v.svg));
 });
 
-// 分类图标（蓝 #3D6FF5，置于类目底色圆角块）——7 个分类含军训(mil)
+// 分类图标（品牌色，置于类目底色圆角块）——7 个分类含军训(mil)
 const cat = ic.categoryIcons;
 ['id', 'soap', 'book', 'bed', 'laptop', 'shirt', 'mil'].forEach((k) => {
   made.push(writeSvg('ic-cat-' + k, '0 0 24 24', cat.fill, cat[k]));
 });
 
-// 菜单图标（蓝）
+// 菜单图标（品牌色）
 const menu = ic.menuIcons;
 ['medal', 'bell', 'help', 'info', 'shield'].forEach((k) => {
   made.push(writeSvg('ic-' + k, '0 0 24 24', menu.fill, menu[k]));

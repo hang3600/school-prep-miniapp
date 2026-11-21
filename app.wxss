@@ -31,9 +31,6 @@ page {
   --tint-shirt: #FFEAF1;
   --tint-mil: #FFE4E1;
 
-  /* 品牌浅绿（图标底 / 头像底） */
-  --soft-blue: #E7F3ED;
-  --soft-blue-deep: #CDE9DC;
 
   /* ===== 圆角（pt × 1.923） ===== */
   --r-card: 31rpx;
@@ -91,7 +88,7 @@ view, text, image, scroll-view { box-sizing: border-box; }
   box-shadow: var(--shadow-1);
 }
 .icon-bg {
-  background: var(--soft-blue);
+  background: var(--brand-soft);
   border-radius: var(--r-iconbg);
 }
 .btn-primary {

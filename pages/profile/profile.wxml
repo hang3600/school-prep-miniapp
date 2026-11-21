@@ -2,7 +2,7 @@
 
   <scroll-view class="content" scroll-y>
     <view class="content-inner">
-      <!-- 头像卡（软蓝品牌底） -->
+      <!-- 头像卡（浅绿品牌底） -->
       <view class="profile-card">
         <view class="avatar">
           <image class="avatar-img" src="/images/icons/ic-user-white.svg" mode="aspectFit" />

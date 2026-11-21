@@ -16,7 +16,7 @@
 
 /* Streak 卡 */
 .streak {
-  background: linear-gradient(135deg, #ff9a5a 0%, #ff7a59 100%);
+  background: linear-gradient(135deg, #F5B36B 0%, #E8913D 100%);
   border-radius: var(--r-card);
   padding: 38rpx;
   box-shadow: var(--shadow-2);
@@ -99,7 +99,7 @@
 .cat-pct { font-size: var(--fs-sub); font-weight: 600; color: var(--brand); }
 .cat-track {
   height: 14rpx;
-  background: var(--soft-blue);
+  background: var(--brand-soft);
   border-radius: 8rpx;
   overflow: hidden;
 }
@@ -126,7 +126,7 @@
   width: 80rpx;
   height: 80rpx;
   border-radius: 40rpx;
-  background: var(--soft-blue);
+  background: var(--brand-soft);
   display: flex;
   align-items: center;
   justify-content: center;

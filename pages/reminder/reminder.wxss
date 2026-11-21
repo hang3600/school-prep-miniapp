@@ -23,7 +23,7 @@
   width: 88rpx;
   height: 88rpx;
   border-radius: var(--r-iconbg);
-  background: var(--soft-blue);
+  background: var(--brand-soft);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,7 +80,7 @@
   width: 50rpx;
   height: 50rpx;
   border-radius: 16rpx;
-  background: var(--soft-blue);
+  background: var(--brand-soft);
   border: 2rpx solid transparent;
 }
 .week-dot.on { background: var(--brand); }
@@ -102,7 +102,7 @@
 
 /* 说明 */
 .tip-card {
-  background: var(--soft-blue);
+  background: var(--brand-soft);
   border-radius: var(--r-card);
   padding: 27rpx 31rpx;
 }

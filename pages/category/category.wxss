@@ -41,7 +41,7 @@
 .recent-chip {
   display: inline-flex;
   align-items: center;
-  background: var(--soft-blue);
+  background: var(--brand-soft);
   color: var(--brand);
   font-size: var(--fs-indicator);
   font-weight: 600;
