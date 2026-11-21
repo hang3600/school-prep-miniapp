@@ -55,8 +55,9 @@ Page({
     }));
 
     // 本学段 7 个分类各自完成度（可点导航到对应清单）
+    const coreOnly = store.getCoreMode();
     const cats = CATEGORIES.map((c) => {
-      const p = store.computeCatProgress(stageKey, c.key);
+      const p = store.computeCatProgress(stageKey, c.key, coreOnly);
       return {
         key: c.key,
         label: c.label,
@@ -70,10 +71,10 @@ Page({
     });
 
     // 顶部连续打卡 / 成就（沿用真实数据）
-    const overall = store.computeStageProgress(stageKey);
+    const overall = store.computeStageProgress(stageKey, coreOnly);
     const st = checkin.stats();
-    const totalDone = STAGES.reduce((sum, s) => sum + store.computeStageProgress(s.key).done, 0);
-    const anyFull = STAGES.some((s) => store.computeStageProgress(s.key).percent >= 100);
+    const totalDone = STAGES.reduce((sum, s) => sum + store.computeStageProgress(s.key, coreOnly).done, 0);
+    const anyFull = STAGES.some((s) => store.computeStageProgress(s.key, coreOnly).percent >= 100);
 
     this.setData({
       stage: stageKey,

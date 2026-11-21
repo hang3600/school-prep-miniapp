@@ -74,6 +74,27 @@
         >{{item.label}}</view>
       </view>
 
+      <!-- 清单范围切换：核心 20 件快速模式 / 完整清单 -->
+      <view class="scope-row">
+        <text class="scope-label">清单范围</text>
+        <view class="scope-seg">
+          <view
+            class="scope-pill {{coreMode ? 'active' : ''}}"
+            hover-class="hv-press"
+            hover-stay-time="60"
+            data-core="true"
+            bindtap="onCoreModeTap"
+          >核心 20 件</view>
+          <view
+            class="scope-pill {{!coreMode ? 'active' : ''}}"
+            hover-class="hv-press"
+            hover-stay-time="60"
+            data-core="false"
+            bindtap="onCoreModeTap"
+          >完整清单</view>
+        </view>
+      </view>
+
       <!-- 分类宫格 -->
       <text class="section-title">入学物品分类</text>
       <view class="grid">

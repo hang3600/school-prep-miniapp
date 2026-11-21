@@ -258,6 +258,86 @@ function run() {
     store.resetStageProgress('high');
     assert('重置学段进度', store.getChecklist('high', 'id')[0].status === 0);
   }
+
+  // ---------- 10. 学段差异化清单（竞品调研后新增）----------
+  {
+    const state = makeState();
+    const env = makeEnv(state);
+    const store = env.load('utils/store.js');
+
+    const namesOf = (st) => {
+      const out = [];
+      store.CAT_KEYS.forEach((c) => store.getChecklist(st, c).forEach((it) => out.push(it.name)));
+      return out;
+    };
+    const college = namesOf('college');
+    const high = namesOf('high');
+    const middle = namesOf('middle');
+    const primary = namesOf('primary');
+
+    assert('大学基准仍为 75 件', college.length === 75, college.length);
+    assert('四学段清单互不相同', college.join('|') !== high.join('|')
+      && high.join('|') !== middle.join('|') && middle.join('|') !== primary.join('|'));
+    assert('高中有专属物品（错题本）', high.indexOf('错题本 ×2') !== -1);
+    assert('初中有专属校服', middle.indexOf('校服 ×2') !== -1);
+    assert('小学有姓名贴', primary.indexOf('姓名贴 / 姓名章') !== -1);
+    assert('小学已排除笔记本电脑', primary.indexOf('笔记本电脑') === -1);
+    assert('小学已排除军训腰带', primary.indexOf('腰带（配军训服）') === -1);
+    assert('共用物品在各学段保留', high.indexOf('身份证') !== -1 && primary.indexOf('身份证') !== -1);
+
+    // id 稳定性：同一分类同一序号在不同学段指向同名物品（迁移锚点不能错位）
+    const c0 = store.getChecklist('college', 'id')[0];
+    const p0 = store.getChecklist('primary', 'id')[0];
+    assert('学段间 id 序号锚点名称一致', c0.name === p0.name && c0.name === '身份证');
+  }
+
+  // ---------- 11. 核心 20 件快速模式 ----------
+  {
+    const state = makeState();
+    const env = makeEnv(state);
+    const store = env.load('utils/store.js');
+
+    assert('核心模式默认关闭', store.getCoreMode() === false);
+    const full = store.computeStageProgress('college');
+    const core = store.computeStageProgress('college', true);
+    assert('核心模式 20 件', core.total === 20, core.total);
+    assert('核心清单少于全量', core.total < full.total);
+    assert('全量仍为 75 件', full.total === 75, full.total);
+    assert('核心物品均带 core 标记', store.getChecklist('college', 'id', true).every((it) => it.core === true));
+    assert('核心模式过滤非核心', store.getChecklist('college', 'id', true).length < store.getChecklist('college', 'id').length);
+
+    store.setCoreMode(true);
+    assert('核心模式开关持久化', store.getCoreMode() === true);
+    const id = store.getChecklist('college', 'id', true)[0].id;
+    store.cycleItem('college', 'id', id);
+    assert('核心模式下仍可勾选', store.getChecklist('college', 'id', true)[0].status === 1);
+    // 自定义物品在核心模式下加入时带 core 标记（用户主动加的必然可见）
+    store.addItem('college', 'id', { name: '临时证件', qty: 1, must: true });
+    assert('核心模式新增物品带 core', store.getChecklist('college', 'id')[store.getChecklist('college', 'id').length - 1].core === true);
+
+    store.setCoreMode(false);
+    assert('可切回完整模式', store.getCoreMode() === false);
+  }
+
+  // ---------- 12. 老用户迁移：core 字段补全 + 不破坏已勾选 ----------
+  {
+    const oldState = {
+      stage: 'college',
+      stageChosen: true,
+      lists: { college: { id: [
+        { id: 's_college_id_0', name: '身份证', must: true, status: 2 },
+        { id: 's_college_id_1', name: '录取通知书', must: true, status: 1 }
+      ] } }
+    };
+    const env = makeEnv(makeState({ storage: { schoolprep_v1: oldState } }));
+    const store = env.load('utils/store.js');
+    const idList = store.getChecklist('college', 'id');
+    const a0 = idList.find((x) => x.id === 's_college_id_0');
+    assert('老用户已装包状态保留', a0 && a0.status === 2);
+    assert('老用户核心标记按名称补全', a0 && a0.core === true);
+    assert('老用户自动补全新种子', idList.length > 2);
+    assert('迁移后序号锚点不变', idList[0].name === '身份证');
+  }
 }
 
 module.exports = { run, name: 'store' };

@@ -72,6 +72,8 @@ Page({
     // 首页清单预览卡：首屏直接展示真实必带物品，证明「替你想到了」。
     // 开启后 preview-card 进入首屏；如需 A/B 对比可临时改回 false。
     showPreview: true,
+    // 快速模式：只显示 20 件核心必带物品（关闭则显示全部 ~75 件）
+    coreMode: false,
     totalPercent: 0,
     totalCount: 0,
     // 是否已开始整理：一件没勾时不展示空 0%，改讲价值主张
@@ -198,10 +200,11 @@ Page({
   refresh() {
     const stage = store.getStage();
     const label = (STAGES.find((s) => s.key === stage) || STAGES[0]).label;
-    const prog = store.computeStageProgress(stage);
+    const coreMode = store.getCoreMode();
+    const prog = store.computeStageProgress(stage, coreMode);
     const categories = CATEGORIES.map((c) => ({
       ...c,
-      count: store.getChecklist(stage, c.key).length
+      count: store.getChecklist(stage, c.key, coreMode).length
     }));
     // Hero 文案三态：未开始 / 进行中 / 全部准备好
     // 未开始时不展示空 0%，改讲清「已经替你列好了什么」——首屏第一印象
@@ -232,6 +235,7 @@ Page({
     this.setData({
       stage,
       stageLabel: label,
+      coreMode,
       totalPercent: prog.percent,
       totalCount: prog.total,
       started: prog.done > 0,
@@ -281,6 +285,15 @@ Page({
   onStartTap() {
     const cat = store.nextIncompleteCat(store.getStage(), null) || 'id';
     wx.navigateTo({ url: '/pages/checklist/checklist?cat=' + cat });
+  },
+
+  // 核心/完整清单切换：只改视图筛选，不动物品数据；进度口径同步跟随
+  onCoreModeTap(e) {
+    const next = e.currentTarget.dataset.core === 'true';
+    if (next === store.getCoreMode()) return; // 点已选中项不动作
+    store.setCoreMode(next);
+    this.refresh();
+    wx.showToast({ title: next ? '已切到核心 20 件' : '已显示全部物品', icon: 'none' });
   },
 
   onStageTap(e) {

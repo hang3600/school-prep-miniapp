@@ -77,7 +77,7 @@ Page({
   refreshStats() {
     const stage = store.getStage();
     const stageLabel = STAGE_LABELS[stage] || '大学';
-    const prog = store.computeStageProgress(stage);
+    const prog = store.computeStageProgress(stage, store.getCoreMode());
     const st = checkin.stats();
     const badge = badgeOf(prog.percent);
 

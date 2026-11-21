@@ -41,7 +41,19 @@ Page({
 
   onReady() {
     this.loadList();
+    this._lastCore = store.getCoreMode();
+    this._ready = true;
     this.maybeGuide();
+  },
+
+  // 从其他 tab 回来时若核心模式变了（如首页切换），同步刷新列表
+  onShow() {
+    if (this._ready !== true) return;
+    const core = store.getCoreMode();
+    if (this._lastCore !== core) {
+      this._lastCore = core;
+      this.loadList();
+    }
   },
 
   // 三态操作引导：改为「页内提示」而非模态弹窗，避免与首页隐私弹窗、学段引导形成三层打断。
@@ -62,7 +74,7 @@ Page({
   // 先查 needAuthorization——需要授权就先弹隐私窗，同意后立即复制，一次点击完成，避免「首次失败、二次成功」。
   onCopyList() {
     const stage = store.getStage();
-    const items = store.getChecklist(stage, this.data.cat);
+    const items = store.getChecklist(stage, this.data.cat, store.getCoreMode());
     if (!items.length) {
       wx.showToast({ title: '这个分类还没有物品', icon: 'none' });
       return;
@@ -129,7 +141,7 @@ Page({
   // 从本地存储读取当前分类清单并拆成「必带 / 选带」分组
   loadList() {
     const stage = store.getStage();
-    const items = store.getChecklist(stage, this.data.cat);
+    const items = store.getChecklist(stage, this.data.cat, store.getCoreMode());
     const groups = store.groupByMust(items);
     // 保留用户手动切换过的折叠状态：勾选/删除物品会触发本方法重算，
     // 若不保留，每次操作都会把分组重置回「必带展开、选带收起」，导致组意外收起/展开。

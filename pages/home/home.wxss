@@ -198,6 +198,34 @@
   font-weight: 600;
 }
 
+/* ===== 清单范围切换（核心 20 件 / 完整）===== */
+.scope-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -8rpx;
+}
+.scope-label { font-size: var(--fs-sub); color: var(--gray); }
+.scope-seg {
+  display: flex;
+  gap: 8rpx;
+  background: var(--brand-soft);
+  border-radius: var(--r-tab-pill);
+  padding: 6rpx;
+}
+.scope-pill {
+  padding: 12rpx 24rpx;
+  border-radius: 44rpx;
+  font-size: var(--fs-indicator);
+  color: var(--brand-deep);
+  transition: opacity 0.15s, transform 0.15s;
+}
+.scope-pill.active {
+  background: var(--brand);
+  color: #ffffff;
+  font-weight: 600;
+}
+
 /* ===== 分类宫格 ===== */
 .section-title {
   font-size: var(--fs-section);

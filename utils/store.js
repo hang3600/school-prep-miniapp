@@ -117,16 +117,100 @@ const SEED_ITEMS = {
   ]
 };
 
+// ===== 学段专属物品（共用 75 件之外，按学段追加）=====
+// 设计原则：
+// ① 大学学段不动（保持 75 件，作为默认基准与迁移锚点）
+// ② 序号从共用清单长度之后连续编排，天然 ≥ LEGACY_SEED_COUNTS，
+//    老用户 migrate() 会自动追加这些新种子（已勾选项不受影响）
+// ③ 只追加不删除：老用户已有清单不会被裁剪，避免丢失勾选进度
+const STAGE_EXTRA_ITEMS = {
+  high: {
+    // 高中：走读/住校，学业压力大，强调复习资料与作息用品
+    book: [
+      { name: '错题本 ×2', must: true },
+      { name: '高考真题卷', must: false },
+      { name: '充电台灯', must: true },
+      { name: '计时器', must: false }
+    ],
+    id: [{ name: '学籍档案', must: true }],
+    soap: [{ name: '咖啡 / 提神饮品', must: false }],
+    laptop: [{ name: '学习平板（选带）', must: false }]
+  },
+  middle: {
+    // 初中：日常走读，物品更轻，强调校服与练习
+    book: [
+      { name: '练习册', must: true },
+      { name: '字帖', must: false },
+      { name: '书包（轻便款）', must: false }
+    ],
+    shirt: [{ name: '校服 ×2', must: true }],
+    soap: [{ name: '雨衣', must: false }],
+    id: [{ name: '学生卡', must: true }]
+  },
+  primary: {
+    // 小学：家长代劳，强调姓名标识、低龄友好餐具与文具
+    id: [{ name: '姓名贴 / 姓名章', must: true }],
+    soap: [
+      { name: '儿童保温杯', must: true },
+      { name: '小雨伞（儿童款）', must: false }
+    ],
+    book: [
+      { name: '铅笔套装', must: true },
+      { name: '橡皮 + 直尺', must: true },
+      { name: '拼音练习本', must: false }
+    ],
+    shirt: [{ name: '校服 ×2', must: true }],
+    laptop: [] // 小学不带电脑，共用清单里的电脑类由「快速模式」过滤掉
+  }
+};
+
+// 学段排除表：从共用清单里剔除明显不适合该学段的物品。
+// 小学：不带电脑/军训/床帘等住校装备（多为走读、家长代劳）
+// 初中：不含军训腰带与床帘（部分走读），但保留军训主体
+const STAGE_EXCLUDE = {
+  primary: {
+    laptop: ['笔记本电脑', '充电器', '插线板', '鼠标', 'U 盘', '手机支架'],
+    mil: ['运动鞋垫 ×2', '腰带（配军训服）', '藿香正气水', '芦荟胶（晒后修复）'],
+    bed: ['床帘', '凉席', '床垫（薄款）']
+  },
+  middle: {
+    bed: ['床帘'],
+    laptop: ['鼠标', '手机支架']
+  }
+};
+
+// 核心物品白名单（快速模式）：从 75 件必带中挑最高频的 20 件。
+// 按物品名精确匹配，独立于种子结构，用户自定义物品不参与核心模式。
+const CORE_ITEM_NAMES = [
+  '身份证', '录取通知书', '户口本复印件', '银行卡', '一寸证件照（红底·蓝底）',
+  '牙刷 + 牙膏', '毛巾 ×2', '洗发水 + 沐浴露', '水杯', '常用药包（感冒药·创可贴）',
+  '笔记本', '中性笔', '双肩书包',
+  '床单 + 被套', '枕头',
+  '笔记本电脑', '充电器', '插线板',
+  'T恤 ×5', '运动鞋'
+];
+const CORE_SET = CORE_ITEM_NAMES.reduce((m, n) => { m[n] = true; return m; }, {});
+
 // 老版本种子分界：上线版本各分类的种子条数。
 // 迁移时只给老用户追加「序号 ≥ 分界」的新种子，已删除的旧种子不复活。
 const LEGACY_SEED_COUNTS = { id: 7, soap: 8, book: 6, bed: 5, laptop: 6, shirt: 6, mil: 10 };
 
 // 生成某学段某分类的种子物品数组（id 唯一：s_学段_分类_序号）
 function seedItems(stage, cat) {
-  return (SEED_ITEMS[cat] || []).map((it, i) => ({
-    id: 's_' + stage + '_' + cat + '_' + i,
+  const excl = (STAGE_EXCLUDE[stage] && STAGE_EXCLUDE[stage][cat]) || [];
+  const baseAll = SEED_ITEMS[cat] || [];
+  const extra = (STAGE_EXTRA_ITEMS[stage] && STAGE_EXTRA_ITEMS[stage][cat]) || [];
+  // 关键：先固定原始序号再过滤。若 filter 后才编序号，排除项会让后续 id 左移，
+  // 老用户数据里 id_0 指向的物品会与新种子含义错位，migrate 的 exists 判定失效。
+  const combined = baseAll
+    .map((it, i) => ({ it, idx: i }))
+    .filter(({ it }) => excl.indexOf(it.name) === -1)
+    .concat(extra.map((it, j) => ({ it, idx: baseAll.length + j })));
+  return combined.map(({ it, idx }) => ({
+    id: 's_' + stage + '_' + cat + '_' + idx,
     name: it.name,
     must: !!it.must,
+    core: !!CORE_SET[it.name],
     status: 0
   }));
 }
@@ -177,6 +261,12 @@ function migrate(state) {
           touched = true;
         }
         if ('done' in it) delete it.done;
+        // core 快速模式标记：老数据无此字段，按名称白名单补标（不影响勾选状态）
+        if (typeof it.core !== 'boolean') {
+          const c = !!CORE_SET[it.name];
+          it.core = c;
+          if (c) touched = true; // 仅 true 时回写，false 用默认值即可，减少写盘
+        }
       });
     });
   });
@@ -259,24 +349,33 @@ function markStageChosen() {
 }
 
 // 某学段某分类的物品数组（返回副本，避免外部直接改存储对象）
-function getChecklist(stage, cat) {
+function getChecklist(stage, cat, coreOnly) {
   const s = read();
   const arr = (s.lists[stage] && s.lists[stage][cat]) || [];
-  return arr.map((it) => ({ ...it }));
+  const list = coreOnly ? arr.filter((it) => it.core) : arr;
+  return list.map((it) => ({ ...it }));
+}
+
+// 快速模式开关：持久化在 state.coreMode（默认 false = 完整清单）
+function getCoreMode() { return !!read().coreMode; }
+function setCoreMode(on) {
+  const s = read();
+  s.coreMode = !!on;
+  write(s);
 }
 
 // 下一个仍有未装包物品的分类 key（按 CAT_KEYS 固定顺序，从「当前分类之后」向前顺位查找，到末尾回绕到最前）。
 // 这样用户在一个分类里整理时，「下一个待整理」指向其后顺位的未完成分类（如 衣物→军训），
 // 而不是像旧逻辑那样永远回跳到数组最前的「生活用品」。
 // 当前分类自身永不作为「下一步」返回；全部完成、或仅当前分类有未完成时返回 null，调用方据此决定是否展示「下一步」。
-function nextIncompleteCat(stage, currentCat) {
+function nextIncompleteCat(stage, currentCat, coreOnly) {
   const idx = CAT_KEYS.indexOf(currentCat);
   const n = CAT_KEYS.length;
   const start = idx < 0 ? 0 : idx + 1; // 从「当前分类之后」开始，不原地打转
   for (let k = 0; k < n; k++) {
     const cat = CAT_KEYS[(start + k) % n];
     if (cat === currentCat) continue; // 排除自身
-    const items = getChecklist(stage, cat);
+    const items = getChecklist(stage, cat, coreOnly);
     if (items.some((it) => (it.status || 0) !== 2)) return cat;
   }
   return null;
@@ -285,8 +384,8 @@ function nextIncompleteCat(stage, currentCat) {
 // 单分类进度 { total, ready, packed, readyPercent, packedPercent, complete }
 // ready = 已备好 + 已装包（status>=1），与首页/清单页头条「准备好了」口径一致；
 // packedPercent / complete 用于进度页「分类完成度」与「下一步」判定（complete 当且仅当全部装包）。
-function computeCatProgress(stage, cat) {
-  const items = getChecklist(stage, cat);
+function computeCatProgress(stage, cat, coreOnly) {
+  const items = getChecklist(stage, cat, coreOnly);
   const total = items.length;
   let ready = 0;
   let packed = 0;
@@ -338,19 +437,21 @@ function addItem(stage, cat, payload) {
     id: 'c_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
     name,
     must: !!payload.must,
+    core: getCoreMode(),
     status: 0
   });
   write(s);
 }
 
 // 单学段总进度 { done, total, percent }（done = 已备好 + 已装包，即「准备好了」）
-function computeStageProgress(stage) {
+function computeStageProgress(stage, coreOnly) {
   const s = read();
   let done = 0;
   let total = 0;
   CAT_KEYS.forEach((cat) => {
     const arr = (s.lists[stage] && s.lists[stage][cat]) || [];
     arr.forEach((it) => {
+      if (coreOnly && !it.core) return;
       total += 1;
       if ((it.status || 0) >= 1) done += 1;
     });
@@ -359,7 +460,7 @@ function computeStageProgress(stage) {
 }
 
 // 全部学段进度数组（供进度中心页）
-function computeAllStages() {
+function computeAllStages(coreOnly) {
   return STAGE_KEYS.map((stage) => ({
     key: stage,
     percent: computeStageProgress(stage).percent
@@ -418,6 +519,8 @@ module.exports = {
   getState,
   getStage,
   setStage,
+  getCoreMode,
+  setCoreMode,
   hasChosenStage,
   markStageChosen,
   getChecklist,
