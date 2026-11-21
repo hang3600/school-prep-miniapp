@@ -1,0 +1,15 @@
+<view class="mask" wx:if="{{visible}}">
+  <view class="dialog">
+    <view class="title">隐私保护指引</view>
+    <scroll-view scroll-y class="body">
+      <text>感谢使用「开学准备清单」。我们高度重视你的隐私与个人信息安全。\n\n在使用前，请阅读并同意
+      <text class="link" hover-class="hv-press" hover-stay-time="60" bindtap="onOpenContract">《{{contractName}}》</text>。\n\n本小程序仅将你的清单数据保存在本机设备，不会上传任何服务器；不收集你的昵称、头像、手机号等个人信息；不涉及向第三方共享数据。</text>
+    </scroll-view>
+    <view class="btns">
+      <view class="btn cancel" hover-class="hv-press" hover-stay-time="60" bindtap="onDisagree">暂不使用</view>
+      <!-- 官方推荐的授权按钮：open-type=agreePrivacyAuthorization，用户点击后微信自动完成授权，
+           之前因隐私未同意而被拦截的接口调用（如 setClipboardData）会自动重试继续执行 -->
+      <button class="btn ok" open-type="agreePrivacyAuthorization" bindagreeprivacyauthorization="onAgree">同意并继续</button>
+    </view>
+  </view>
+</view>

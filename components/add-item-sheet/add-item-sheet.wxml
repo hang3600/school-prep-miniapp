@@ -1,0 +1,56 @@
+<view wx:if="{{visible}}" class="mask" bindtap="close">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet-handle"></view>
+    <!-- 显式关闭按钮：不只靠点遮罩，半屏弹层更符合移动端直觉（图标走 design-tokens 的 ic-close） -->
+    <view class="sheet-close" hover-class="hv-press" hover-stay-time="60" catchtap="close">
+      <image class="ic-close" src="/images/icons/ic-close.svg" mode="aspectFit" />
+    </view>
+    <text class="sheet-title">添加物品</text>
+
+    <view class="field">
+      <text class="field-label">名称</text>
+      <!-- maxlength 为第一道防线（输入/粘贴都受控）；保存时 checklist.onSave 还会 trim + 截断兜底 -->
+      <!-- focus：打开弹层即唤起键盘；confirm-type + bindconfirm：键盘「完成」键直接保存 -->
+      <input
+        class="field-input"
+        placeholder="如：充电宝"
+        maxlength="20"
+        value="{{name}}"
+        focus="{{focus}}"
+        confirm-type="done"
+        confirm-hold="{{false}}"
+        cursor-spacing="24"
+        bindinput="onName"
+        bindconfirm="save"
+        bindkeyboardheightchange="noop"
+      />
+    </view>
+
+    <view class="field">
+      <text class="field-label">分类</text>
+      <view class="cat-chips">
+        <view
+          wx:for="{{cats}}"
+          wx:key="key"
+          class="cat-chip {{catIdx === index ? 'active' : ''}}"
+          hover-class="hv-press"
+          hover-stay-time="60"
+          data-i="{{index}}"
+          bindtap="selCat"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <view class="field row">
+      <text class="field-label">数量</text>
+      <view class="stepper">
+        <view class="step-btn" hover-class="hv-press" hover-stay-time="60" bindtap="dec">-</view>
+        <text class="step-num num">{{qty}}</text>
+        <view class="step-btn" hover-class="hv-press" hover-stay-time="60" bindtap="inc">+</view>
+      </view>
+      <view class="must-toggle {{must ? 'on' : ''}}" hover-class="hv-press" hover-stay-time="60" bindtap="toggleMust">{{must ? '必带' : '选带'}}</view>
+    </view>
+
+    <view class="save-btn" hover-class="hv-press" hover-stay-time="60" bindtap="save">保存</view>
+  </view>
+</view>

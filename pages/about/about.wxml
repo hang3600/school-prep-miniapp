@@ -1,0 +1,50 @@
+<view class="screen">
+
+  <scroll-view class="content" scroll-y>
+    <view class="content-inner">
+      <!-- 品牌 -->
+      <view class="card brand-card">
+        <view class="brand-logo">
+          <image class="brand-logo-img" src="/images/icons/ic-backpack.svg" mode="aspectFit" />
+        </view>
+        <text class="brand-name">开学准备清单</text>
+        <text class="brand-slogan">大学入学物品清单 · 按学段一键生成，开学不再手忙脚乱</text>
+        <text class="brand-ver num">版本 v{{version}}</text>
+      </view>
+
+      <!-- 功能特性 -->
+      <view class="card feat-card">
+        <text class="sec-title">功能特性</text>
+        <view wx:for="{{features}}" wx:key="title" class="feat-row">
+          <view class="feat-icon">
+            <image class="feat-icon-img" src="/images/icons/{{item.icon}}.svg" mode="aspectFit" />
+          </view>
+          <view class="feat-mid">
+            <text class="feat-title">{{item.title}}</text>
+            <text class="feat-desc">{{item.desc}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 数据说明 -->
+      <view class="card data-card">
+        <text class="sec-title">数据说明</text>
+        <text class="data-text">本小程序为纯本地工具，没有账号系统，也不依赖服务器。你的清单与打卡记录仅保存在本机，卸载小程序或清理微信缓存后会被清除。我们不收集你的昵称、头像、手机号等个人信息，也不向第三方共享数据。</text>
+      </view>
+
+      <!-- 快捷入口 -->
+      <view class="card link-card">
+        <view class="link-row" hover-class="hv-press" hover-stay-time="60" bindtap="onGoPrivacy">
+          <text class="link-label">隐私政策</text>
+          <image class="link-chevron" src="/images/icons/ic-chevron.svg" mode="aspectFit" />
+        </view>
+        <view class="link-row" hover-class="hv-press" hover-stay-time="60" bindtap="onGoHelp">
+          <text class="link-label">使用帮助</text>
+          <image class="link-chevron" src="/images/icons/ic-chevron.svg" mode="aspectFit" />
+        </view>
+      </view>
+
+      <text class="copyright">© {{year}} 开学准备清单 · 个人开发者作品</text>
+    </view>
+  </scroll-view>
+</view>

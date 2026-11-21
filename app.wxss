@@ -1,0 +1,121 @@
+/* ============================================================
+   开学准备清单小程序 · 全局设计令牌
+   换算基准：设计稿 390pt → 小程序 750rpx 屏宽，系数 750/390 ≈ 1.923
+   颜色 / 字号 / 圆角 / 阴影 单一真源 = design-tokens.json
+   ============================================================ */
+page {
+  /* ===== 颜色 ===== */
+  --brand: #3D6FF5;
+  --brand-deep: #2B57D4;
+  --gray: #8A93A8;
+  --ink: #1B2138;
+  --ink-2: #5A6478;      /* 次级正文（分类说明等），category.wxss 引用，勿删 */
+  --bg: #F4F6FC;
+  --border: #ECEFFB;
+  --error-tint: #FFEAE0;
+  --error-accent: #FF7A45;
+  --white: #FFFFFF;
+  --skeleton: #ECEFFB;
+  --success: #2BC48A;
+
+  /* 类目底色（7 宫格 / 分类页，与 utils/categories.js 的 tint 保持一致） */
+  --tint-id: #EAF0FF;
+  --tint-soap: #E6F7EE;
+  --tint-book: #FFF4DC;
+  --tint-bed: #F0EBFF;
+  --tint-laptop: #FFEDD9;
+  --tint-shirt: #FFEAF1;
+  --tint-mil: #FFE4E1;
+
+  /* 软蓝（图标底 / 头像底） */
+  --soft-blue: #EAF0FF;
+  --soft-blue-deep: #DCE7FF;
+
+  /* ===== 圆角（pt × 1.923） ===== */
+  --r-card: 31rpx;
+  --r-dialog: 54rpx;
+  --r-btn: 27rpx;
+  --r-tab-pill: 69rpx;
+  --r-tab-pill-in: 50rpx;
+  --r-iconbg: 23rpx;
+
+  /* ===== 字号（pt × 1.923） ===== */
+  --fs-title: 35rpx;       /* 18pt */
+  --fs-section: 29rpx;     /* 15pt */
+  --fs-btn: 29rpx;         /* 15pt */
+  --fs-body: 27rpx;        /* 14pt */
+  --fs-sub: 25rpx;         /* 13pt */
+  --fs-indicator: 23rpx;   /* 12pt */
+  --fs-tab: 21rpx;         /* 11pt：原 19rpx 实测偏小，提升可读性 */
+
+  /* ===== 字重 ===== */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* ===== 间距（pt × 1.923） ===== */
+  --sp-screen-x: 28rpx;    /* 屏幕两侧留白（38 偏窄显内收 → 20 过宽失呼吸 → 定 28 折中） */
+  --sp-gap: 31rpx;         /* 16pt */
+  --tab-bar-h: 120rpx;     /* 62pt（与顶部导航带 84pt 视觉等重；custom-tab-bar 内同步用具体值） */
+
+  /* ===== 阴影 5 档（与设计稿 P0 打磨一致） ===== */
+  --shadow-1: 0 4rpx 15rpx rgba(0, 0, 0, 0.06);     /* 白卡 */
+  --shadow-2: 0 8rpx 31rpx rgba(0, 0, 0, 0.08);     /* Hero / 海报 */
+  --shadow-sheet: 0 -15rpx 46rpx rgba(0, 0, 0, 0.16);/* 弹窗 sheet（向上） */
+  --shadow-btn: 0 4rpx 15rpx rgba(0, 0, 0, 0.12);    /* 主按钮 */
+  --shadow-tab: 0 -8rpx 31rpx rgba(0, 0, 0, 0.10);   /* TabBar（向上） */
+
+  /* ===== 页面背景微渐变 ===== */
+  --bg-grad: linear-gradient(180deg, #FBFDFF 0%, #F4F6FC 100%);
+
+  /* 更纱黑体需 wx.loadFontFace 引入（见 app.js）；未加载时回退 PingFang SC */
+  --font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Sarasa Gothic SC", sans-serif;
+
+  background: var(--bg-grad);
+  font-family: var(--font-family);
+  color: var(--ink);
+  font-size: var(--fs-body);
+}
+
+view, text, image, scroll-view { box-sizing: border-box; }
+
+/* ===== 通用工具类 ===== */
+.card {
+  background: var(--white);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-1);
+}
+.icon-bg {
+  background: var(--soft-blue);
+  border-radius: var(--r-iconbg);
+}
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand);
+  color: var(--white);
+  border-radius: var(--r-btn);
+  font-weight: var(--fw-semibold);
+  box-shadow: var(--shadow-btn);
+}
+.btn-primary::after { border: none; }
+
+/* 主内容区：StatusBar 之下、TabBar 之上，纵向排列 */
+.page-content {
+  padding: 0 var(--sp-screen-x);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+/* 数字 tabular 对齐 */
+.num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+/* ===== 通用按压反馈（配合 wxml 的 hover-class="hv-press"） =====
+   产品感关键：所有可点元素按下都有即时视觉回应；过渡由各元素自身的 transition 承担 */
+.hv-press {
+  opacity: 0.72;
+  transform: scale(0.97);
+}

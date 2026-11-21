@@ -1,0 +1,237 @@
+.screen {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-grad);
+}
+
+.content { flex: 1; overflow: hidden; }
+.content-inner {
+  padding: 20rpx var(--sp-screen-x) 0;
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom) + 30rpx);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+
+/* 搜索来源提示条 */
+.search-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--soft-blue);
+  border-radius: var(--r-iconbg);
+  padding: 16rpx 22rpx;
+}
+.sh-text { font-size: var(--fs-indicator); color: var(--brand-deep); flex: 1; min-width: 0; }
+.sh-clear { font-size: var(--fs-indicator); color: var(--brand); font-weight: var(--fw-semibold); margin-left: 16rpx; flex-shrink: 0; }
+
+/* 总进度 */
+.progress-card {
+  background: #ffffff;
+  border-radius: var(--r-card);
+  padding: 31rpx;
+  box-shadow: var(--shadow-1);
+}
+.pc-top { display: flex; align-items: center; justify-content: space-between; }
+.pc-label { font-size: var(--fs-body); color: var(--ink); }
+.pc-pct { font-size: var(--fs-title); font-weight: 700; color: var(--brand); }
+.pc-track {
+  height: 15rpx;
+  background: var(--soft-blue);
+  border-radius: 8rpx;
+  margin: 20rpx 0 12rpx;
+  overflow: hidden;
+}
+.pc-fill { height: 100%; background: var(--brand); border-radius: 8rpx; }
+.pc-sub { font-size: var(--fs-indicator); color: var(--gray); }
+
+/* 分组 */
+.group-card {
+  background: #ffffff;
+  border-radius: var(--r-card);
+  padding: 27rpx;
+  box-shadow: var(--shadow-1);
+}
+.group-head { display: flex; align-items: center; }
+.group-name { font-size: var(--fs-section); font-weight: 600; color: var(--ink); }
+.group-count {
+  font-size: var(--fs-indicator);
+  color: var(--gray);
+  background: var(--soft-blue);
+  border-radius: 16rpx;
+  padding: 2rpx 14rpx;
+  margin-left: 12rpx;
+}
+.group-chevron { width: 30rpx; height: 30rpx; margin-left: auto; opacity: 0.5; transition: transform 0.2s; }
+.group-chevron.open { transform: rotate(90deg); }
+.group-body { margin-top: 12rpx; }
+.item-row { display: flex; align-items: center; padding: 15rpx 0; }
+.checkbox {
+  width: 42rpx;
+  height: 42rpx;
+  border-radius: 12rpx;
+  border: 3rpx solid #c9d3e6;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.checkbox.checked { background: var(--brand); border-color: var(--brand); }
+/* 三态中间档「已备好」：品牌色浅底 + 圆点（区别于空态与打勾全态） */
+.checkbox.half { background: rgba(61, 111, 245, 0.14); border-color: var(--brand); }
+.check-dot { width: 16rpx; height: 16rpx; border-radius: 50%; background: var(--brand); }
+.check-ic { width: 28rpx; height: 28rpx; }
+.item-name { margin-left: 20rpx; font-size: var(--fs-body); color: var(--ink); min-width: 0; }
+.item-name.done { color: var(--gray); text-decoration: line-through; }
+/* 已备好（未装包）：主色偏深，提示「备好了但还没装箱」 */
+.item-name.ready { color: var(--brand); }
+/* 搜索命中高亮：名称主色加粗 + 右侧标记，从分类页搜索跳进来时一眼定位 */
+.item-name.hit, .item-row .item-name.hit { color: var(--brand); font-weight: var(--fw-semibold); }
+.hit-tag {
+  margin-left: 12rpx;
+  flex-shrink: 0;
+  font-size: var(--fs-tab);
+  color: var(--brand);
+  background: var(--soft-blue);
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+}
+/* 三态操作提示行：替代移除的首次 modal，改为带底色常驻提示条，勾第一件后自动隐去 */
+.cycle-hint {
+  display: block;
+  margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  background: var(--soft-blue);
+  border-radius: var(--r-iconbg);
+  font-size: var(--fs-indicator);
+  color: var(--brand-deep);
+  line-height: 1.5;
+}
+
+/* 「下一步」轻量入口（进度卡常驻，有未完成分类时显示） */
+.next-jump {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  background: var(--soft-blue);
+  border-radius: var(--r-btn);
+}
+.nj-label { font-size: 24rpx; color: var(--brand); font-weight: 600; }
+.nj-arrow { font-size: 24rpx; color: var(--brand); }
+/* 完成态卡内「接着整理下一个分类」引导（比轻量入口更突出） */
+.done-next {
+  margin-top: 20rpx;
+  height: 78rpx;
+  border-radius: var(--r-btn);
+  background: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dn-text { font-size: var(--fs-body); color: #ffffff; font-weight: 600; }
+
+/* ===== 全部装包完成卡（收尾仪式感 + 复制/分享引导） ===== */
+.done-card {
+  margin-top: 23rpx;
+  background: #f2f7ff;
+  border: 2rpx solid #d8e6ff;
+  border-radius: var(--r-card);
+  padding: 31rpx;
+  box-shadow: var(--shadow-1);
+}
+.done-title { display: block; font-size: 31rpx; font-weight: 700; color: var(--brand); }
+.done-sub { display: block; margin-top: 10rpx; font-size: 24rpx; color: #6b7688; line-height: 1.5; }
+.done-actions { display: flex; gap: 16rpx; margin-top: 23rpx; }
+.done-btn {
+  flex: 1;
+  height: 76rpx;
+  border-radius: var(--r-btn);
+  background: #ffffff;
+  border: 2rpx solid var(--brand);
+  color: var(--brand);
+  font-size: var(--fs-body);
+  line-height: 72rpx;
+  text-align: center;
+  padding: 0;
+}
+.done-btn.primary { background: var(--brand); color: #ffffff; }
+.done-btn.primary::after,
+.done-btn::after { border: none; }
+.done-btn { transition: transform 0.15s ease, opacity 0.15s ease; }
+
+/* 底部添加 */
+.add-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 23rpx var(--sp-screen-x) calc(23rpx + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.92);
+}
+.add-bar-row { display: flex; gap: 16rpx; }
+.copy-btn {
+  flex: 1;
+  height: 88rpx;
+  background: #ffffff;
+  border: 2rpx solid var(--brand);
+  border-radius: var(--r-btn);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  box-shadow: var(--shadow-1);
+}
+.copy-btn::after { border: none; }
+.copy-ic { width: 32rpx; height: 32rpx; }
+.add-btn {
+  flex: 1;
+  height: 88rpx;
+  background: var(--brand);
+  border-radius: var(--r-btn);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  box-shadow: var(--shadow-btn);
+}
+.add-btn::after { border: none; }
+.add-ic { width: 36rpx; height: 36rpx; }
+
+/* 触感反馈 */
+.item-row:active { opacity: 0.75; }
+.group-head:active { opacity: 0.75; }
+.add-btn:active { opacity: 0.85; }
+
+/* ===== 按压反馈过渡 + 勾选动效 ===== */
+.group-head,
+.item-row,
+.add-btn {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.checkbox {
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.check-ic {
+  animation: check-pop 0.22s ease;
+}
+@keyframes check-pop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+/* ===== 进度条宽度过渡（勾选时平滑推进而非跳变） ===== */
+.pc-fill {
+  transition: width 0.4s cubic-bezier(0.25, 0.8, 0.35, 1);
+}

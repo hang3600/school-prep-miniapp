@@ -1,0 +1,61 @@
+/* 自定义 TabBar：组件样式隔离，此处用具体值（不依赖 page CSS 变量） */
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* 组件不继承 page 的 view{box-sizing}，必须显式声明：
+     border-box 时 height 已含 padding，安全区只算一次（总高 = 120rpx + 安全区）；
+     若退回 content-box，padding 会额外叠加，导致底部多出一整个安全区的空白。
+     高度 120rpx(62pt) 与 app.wxss 的 --tab-bar-h 保持同步（组件取不到 page 变量，故用具体值）。
+     收紧动机：顶部导航带 84pt vs 原 tabBar 112pt 上窄下宽不对称，现 62pt+34pt≈97pt 接近等高。 */
+  box-sizing: border-box;
+  height: calc(120rpx + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #ffffff;
+  box-shadow: 0 -8rpx 31rpx rgba(0, 0, 0, 0.10);
+  display: flex;
+  align-items: center;
+  z-index: 100;
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.tab-pill {
+  width: 100rpx;
+  height: 64rpx;
+  border-radius: 62rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.tab-pill.active {
+  background: #3d6ff5;
+}
+.tab-icon {
+  width: 46rpx;
+  height: 46rpx;
+}
+.tab-text {
+  font-size: 21rpx; /* 与 app.wxss --fs-tab 同步；组件样式隔离无法引用 page 变量 */
+  color: #8a93a8;
+  margin-top: 8rpx;
+}
+.tab-text.active {
+  color: #3d6ff5;
+  font-weight: 600;
+}
+
+/* ===== 按压反馈（组件样式隔离，需自带 hv-press 定义） ===== */
+.tab-item {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.hv-press {
+  opacity: 0.72;
+  transform: scale(0.97);
+}

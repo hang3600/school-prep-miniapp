@@ -1,0 +1,73 @@
+.page {
+  padding: 32rpx var(--sp-screen-x);
+  /* 底部避开全面屏 Home 条 / 手势条（iPhone 安全区 ≈34pt，安卓多为 0 自动退化） */
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: #F4F6FC;
+}
+.h {
+  font-size: 38rpx;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin-bottom: 24rpx;
+}
+.section {
+  margin-bottom: 28rpx;
+}
+.h2 {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--brand);
+  margin-bottom: 10rpx;
+}
+.p {
+  font-size: var(--fs-body);
+  line-height: 46rpx;
+  color: #4A4F57;
+}
+.em {
+  color: #1A1A1A;
+  font-weight: 500;
+}
+.official {
+  margin-top: 16rpx;
+  background: #E6F1FB;
+  color: var(--brand);
+  text-align: center;
+  border-radius: 999rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+}
+.back {
+  margin-top: 20rpx;
+  text-align: center;
+  color: #8A9099;
+  font-size: 26rpx;
+  padding: 16rpx;
+}
+.agreed {
+  margin-top: 16rpx;
+  text-align: center;
+  color: #2BA471;
+  font-size: 28rpx;
+  background: #E8F6EF;
+  border-radius: 999rpx;
+  padding: 24rpx;
+}
+.agree-btn {
+  margin-top: 16rpx;
+  text-align: center;
+  background: var(--brand);
+  color: #fff;
+  border-radius: 999rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+}
+
+/* ===== 按压反馈过渡 ===== */
+.official,
+.agree-btn,
+.back {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}

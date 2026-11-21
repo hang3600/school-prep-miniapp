@@ -1,0 +1,53 @@
+<view class="screen">
+
+  <scroll-view class="content" scroll-y>
+    <view class="content-inner">
+      <!-- 头像卡（软蓝品牌底） -->
+      <view class="profile-card">
+        <view class="avatar">
+          <image class="avatar-img" src="/images/icons/ic-user-white.svg" mode="aspectFit" />
+        </view>
+        <view class="profile-mid">
+          <text class="profile-name">{{name}}</text>
+          <text class="profile-stage">{{stageLabel}} · {{grade}} 级新生</text>
+        </view>
+        <image class="profile-edit" src="/images/icons/ic-settings.svg" mode="aspectFit" />
+      </view>
+
+      <!-- 3 数据卡（可点击：清单 / 打卡 / 成就） -->
+      <view class="stat-row">
+        <view wx:for="{{stats}}" wx:key="key" class="stat-cell" hover-class="hv-press" hover-stay-time="60" data-key="{{item.key}}" bindtap="onStatTap">
+          <text class="stat-num num">{{item.value}}</text>
+          <text class="stat-label">{{item.label}}</text>
+          <text class="stat-trend {{item.trendType}}">{{item.trend}}</text>
+        </view>
+      </view>
+
+      <!-- 菜单 -->
+      <view wx:for="{{groups}}" wx:key="title" class="menu-group">
+        <text class="menu-group-title">{{item.title}}</text>
+        <view class="menu-card">
+          <view
+            wx:for="{{item.items}}"
+            wx:for-item="mi"
+            wx:key="label"
+            class="menu-item"
+            hover-class="hv-press"
+            hover-stay-time="60"
+            data-key="{{mi.key}}"
+            bindtap="onMenuTap"
+          >
+            <view class="menu-icon">
+              <image class="menu-icon-img" src="/images/icons/{{mi.icon}}.svg" mode="aspectFit" />
+            </view>
+            <text class="menu-label">{{mi.label}}</text>
+            <image class="menu-chevron" src="/images/icons/ic-chevron.svg" mode="aspectFit" />
+          </view>
+        </view>
+      </view>
+
+      <!-- 清除本机数据（无账号，清除 = 恢复默认清单） -->
+      <view class="logout" hover-class="hv-press" hover-stay-time="60" bindtap="onLogout">清除本机数据</view>
+    </view>
+  </scroll-view>
+</view>

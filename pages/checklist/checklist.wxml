@@ -1,0 +1,104 @@
+<view class="screen">
+
+  <scroll-view class="content" scroll-y>
+    <view class="content-inner">
+      <!-- 空态：分类无物品（如非法 cat 参数）时兜底 -->
+      <block wx:if="{{groups.length === 0}}">
+        <empty-state
+          title="这个分类暂时没有物品"
+          sub="回首页看看其他分类吧"
+          btnText="返回首页"
+          bind:action="onGoHome"
+        />
+      </block>
+
+      <block wx:else>
+      <!-- 搜索来源提示：从分类页搜索跳进来时说明高亮来自哪个关键词，可一键清除 -->
+      <view wx:if="{{kw}}" class="search-hint">
+        <text class="sh-text">搜索「{{kw}}」· 命中物品已高亮</text>
+        <text class="sh-clear" hover-class="hv-press" hover-stay-time="60" bindtap="onClearKw">清除</text>
+      </view>
+
+      <!-- 总进度 -->
+      <view class="progress-card">
+        <view class="pc-top">
+          <text class="pc-label">整理进度</text>
+          <text class="pc-pct num">{{totalPercent}}%</text>
+        </view>
+        <view class="pc-track">
+          <view class="pc-fill" style="width:{{totalPercent}}%"></view>
+        </view>
+        <text class="pc-sub">已备好 {{readyCount}} 件 · 已装包 {{packedCount}} / {{totalCount}} 项</text>
+        <!-- 只在还没勾任何一件时出现；勾第一件后自动隐去，不留常驻说明书 -->
+        <text wx:if="{{showCycleHint}}" class="cycle-hint">轻点切换：未备 → 已备好 → 已装包；长按可移除物品</text>
+        <view wx:if="{{nextCat}}" class="next-jump" hover-class="hv-press" hover-stay-time="60" data-cat="{{nextCat}}" bindtap="onGoCat">
+          <text class="nj-label">下一个待整理：{{nextCatLabel}}</text>
+          <text class="nj-arrow">继续 ›</text>
+        </view>
+      </view>
+
+      <!-- 全部装包完成：给一个「有始有终」的收尾，并顺势引导复制/分享 -->
+      <view wx:if="{{allDone}}" class="done-card">
+        <text class="done-title">这个分类全部装包完成</text>
+        <text class="done-sub">{{doneSummary}}</text>
+        <view wx:if="{{nextCat}}" class="done-next" hover-class="hv-press" hover-stay-time="60" data-cat="{{nextCat}}" bindtap="onGoCat">
+          <text class="dn-text">接着整理「{{nextCatLabel}}」›</text>
+        </view>
+        <view class="done-actions">
+          <view class="done-btn" hover-class="hv-press" hover-stay-time="60" bindtap="onCopyList">复制清单</view>
+          <button class="done-btn primary" open-type="share" hover-class="hv-press" hover-stay-time="60">发给家人</button>
+        </view>
+      </view>
+
+      <!-- 分组 -->
+      <view wx:for="{{groups}}" wx:key="name" class="group-card">
+        <view class="group-head" data-idx="{{index}}" hover-class="hv-press" hover-stay-time="60" bindtap="toggleGroup">
+          <text class="group-name">{{item.name}}</text>
+          <text class="group-count num">{{item.items.length}}</text>
+          <image class="group-chevron {{item.open ? 'open' : ''}}" src="/images/icons/ic-chevron.svg" mode="aspectFit" />
+        </view>
+        <view wx:if="{{item.open}}" class="group-body">
+          <view
+            wx:for="{{item.items}}"
+            wx:for-item="it"
+            wx:key="id"
+            class="item-row"
+            hover-class="hv-press"
+            hover-stay-time="60"
+            data-id="{{it.id}}"
+            data-name="{{it.name}}"
+            bindtap="toggleItem"
+            bindlongpress="onItemLongPress"
+          >
+            <view class="checkbox {{it.status === 1 ? 'half' : ''}} {{it.status === 2 ? 'checked' : ''}}">
+              <view wx:if="{{it.status === 1}}" class="check-dot"></view>
+              <image wx:if="{{it.status === 2}}" class="check-ic" src="/images/icons/ic-check.svg" mode="aspectFit" />
+            </view>
+            <text class="item-name {{it.status === 2 ? 'done' : ''}} {{it.status === 1 ? 'ready' : ''}} {{it.hit ? 'hit' : ''}}">{{it.name}}</text>
+            <text wx:if="{{it.hit}}" class="hit-tag">搜索命中</text>
+          </view>
+        </view>
+      </view>
+      </block>
+    </view>
+  </scroll-view>
+
+  <!-- 底部操作栏：复制清单 + 添加物品 -->
+  <view class="add-bar">
+    <view class="add-bar-row">
+      <view class="add-btn" hover-class="hv-press" hover-stay-time="60" bindtap="onAdd">
+        <image class="add-ic" src="/images/icons/ic-plus.svg" mode="aspectFit" />
+        <text>添加自定义物品</text>
+      </view>
+      <view class="copy-btn" hover-class="hv-press" hover-stay-time="60" bindtap="onCopyList">
+        <image class="copy-ic" src="/images/icons/ic-share.svg" mode="aspectFit" />
+        <text>复制开学清单</text>
+      </view>
+    </view>
+  </view>
+
+  <add-item-sheet visible="{{sheetVisible}}" currentCat="{{cat}}" bind:close="closeSheet" bind:save="onSave" />
+
+  <!-- 隐私授权弹窗宿主：复制清单触发 onNeedPrivacyAuthorization 时在当前页弹出 -->
+  <privacy-popup id="privacyPopup" />
+</view>

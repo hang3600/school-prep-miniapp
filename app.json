@@ -1,0 +1,36 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/category/category",
+    "pages/progress/progress",
+    "pages/profile/profile",
+    "pages/checklist/checklist",
+    "pages/privacy/privacy",
+    "pages/reminder/reminder",
+    "pages/help/help",
+    "pages/about/about"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#3D6FF5",
+    "navigationBarTitleText": "开学准备清单",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F4F6FC",
+    "enablePullDownRefresh": false
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#8A93A8",
+    "selectedColor": "#3D6FF5",
+    "backgroundColor": "#FFFFFF",
+    "list": [
+      { "pagePath": "pages/home/home", "text": "清单" },
+      { "pagePath": "pages/category/category", "text": "分类" },
+      { "pagePath": "pages/progress/progress", "text": "进度" },
+      { "pagePath": "pages/profile/profile", "text": "我的" }
+    ]
+  },
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json",
+  "__usePrivacyCheck__": true
+}

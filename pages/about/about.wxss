@@ -1,0 +1,75 @@
+.screen {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-grad);
+}
+
+.content { flex: 1; overflow: hidden; }
+.content-inner {
+  padding: 20rpx var(--sp-screen-x) 0;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+.sec-title { font-size: var(--fs-section); font-weight: 600; color: var(--ink); display: block; margin-bottom: 23rpx; }
+
+/* 品牌 */
+.brand-card { padding: 46rpx 31rpx 38rpx; display: flex; flex-direction: column; align-items: center; }
+.brand-logo {
+  width: 138rpx;
+  height: 138rpx;
+  border-radius: var(--r-card);
+  background: linear-gradient(135deg, #eaf0ff 0%, #dce7ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand-logo-img { width: 77rpx; height: 77rpx; }
+.brand-name { font-size: 38rpx; font-weight: 700; color: var(--ink); margin-top: 23rpx; }
+.brand-slogan { font-size: var(--fs-indicator); color: var(--gray); margin-top: 8rpx; }
+.brand-ver { font-size: 21rpx; color: var(--gray); margin-top: 15rpx; }
+
+/* 功能 */
+.feat-card { padding: 31rpx; }
+.feat-row { display: flex; align-items: flex-start; }
+.feat-row + .feat-row { margin-top: 23rpx; }
+.feat-icon {
+  width: 69rpx;
+  height: 69rpx;
+  border-radius: var(--r-iconbg);
+  background: var(--soft-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.feat-icon-img { width: 38rpx; height: 38rpx; }
+.feat-mid { flex: 1; margin-left: 23rpx; }
+.feat-title { font-size: var(--fs-body); font-weight: 600; color: var(--ink); display: block; }
+.feat-desc { font-size: var(--fs-indicator); color: var(--gray); display: block; margin-top: 4rpx; line-height: 38rpx; }
+
+/* 数据说明 */
+.data-card { padding: 31rpx; }
+.data-text { font-size: var(--fs-sub); line-height: 44rpx; color: var(--gray); }
+
+/* 快捷入口 */
+.link-card { padding: 8rpx 31rpx; }
+.link-row { display: flex; align-items: center; padding: 27rpx 0; border-bottom: 1rpx solid var(--border); }
+.link-row:last-child { border-bottom: none; }
+.link-label { flex: 1; font-size: var(--fs-body); color: var(--ink); }
+.link-chevron { width: 28rpx; height: 28rpx; opacity: 0.5; }
+
+.copyright {
+  text-align: center;
+  font-size: 21rpx;
+  color: var(--gray);
+  margin-top: 12rpx;
+}
+
+/* ===== 按压反馈过渡 ===== */
+.link-row {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}

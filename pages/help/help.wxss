@@ -1,0 +1,84 @@
+.screen {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-grad);
+}
+
+.content { flex: 1; overflow: hidden; }
+.content-inner {
+  padding: 20rpx var(--sp-screen-x) 0;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+.sec-title { font-size: var(--fs-section); font-weight: 600; color: var(--ink); display: block; }
+.sec-title.outer { padding-left: 12rpx; }
+
+/* 步骤 */
+.steps-card { padding: 31rpx; }
+.sec-title { margin-bottom: 23rpx; }
+.step-row { display: flex; align-items: flex-start; }
+.step-row + .step-row { margin-top: 23rpx; }
+.step-num {
+  width: 46rpx;
+  height: 46rpx;
+  border-radius: var(--r-iconbg);
+  background: var(--soft-blue);
+  color: var(--brand);
+  font-size: var(--fs-sub);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.step-mid { flex: 1; margin-left: 19rpx; }
+.step-title { font-size: var(--fs-body); font-weight: 600; color: var(--ink); display: block; }
+.step-desc { font-size: var(--fs-indicator); color: var(--gray); display: block; margin-top: 4rpx; }
+
+/* FAQ */
+.faq-card { padding: 8rpx 31rpx; }
+.faq-item { padding: 27rpx 0; border-bottom: 1rpx solid var(--border); }
+.faq-item:last-child { border-bottom: none; }
+.faq-head { display: flex; align-items: center; }
+.faq-q { flex: 1; font-size: var(--fs-body); font-weight: 600; color: var(--ink); }
+.faq-chevron { width: 28rpx; height: 28rpx; opacity: 0.5; margin-left: 19rpx; flex-shrink: 0; transition: transform 0.2s; }
+.faq-chevron.open { transform: rotate(90deg); }
+.faq-a {
+  display: block;
+  margin-top: 15rpx;
+  font-size: var(--fs-sub);
+  line-height: 44rpx;
+  color: var(--gray);
+}
+
+/* 说明 */
+.tip-card {
+  background: var(--soft-blue);
+  border-radius: var(--r-card);
+  padding: 23rpx 31rpx;
+}
+.tip-text { font-size: var(--fs-indicator); line-height: 40rpx; color: #4A5675; }
+
+/* 在线客服按钮 */
+.contact-btn {
+  margin: 18rpx 0 0;
+  padding: 20rpx 0;
+  background: var(--brand);
+  color: #fff;
+  font-size: 28rpx;
+  line-height: 1.4;
+  border-radius: 999rpx;
+  text-align: center;
+}
+.contact-btn::after {
+  border: none;
+}
+
+/* ===== 按压反馈过渡 ===== */
+.faq-item {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}

@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "add-item-sheet": "/components/add-item-sheet/add-item-sheet",
+    "empty-state": "/components/empty-state/empty-state",
+    "privacy-popup": "/components/privacy-popup/privacy-popup"
+  },
+  "navigationBarTitleText": "开学准备清单"
+}

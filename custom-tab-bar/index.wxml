@@ -1,0 +1,21 @@
+<view class="tab-bar">
+  <view
+    wx:for="{{list}}"
+    wx:key="pagePath"
+    wx:for-item="item"
+    class="tab-item"
+    hover-class="hv-press"
+    hover-stay-time="60"
+    data-index="{{index}}"
+    bindtap="switchTab"
+  >
+    <view class="tab-pill {{selected === index ? 'active' : ''}}">
+      <image
+        class="tab-icon"
+        src="/images/icons/{{item.icon}}{{selected === index ? '-white' : '-gray'}}.svg"
+        mode="aspectFit"
+      />
+    </view>
+    <text class="tab-text {{selected === index ? 'active' : ''}}">{{item.text}}</text>
+  </view>
+</view>

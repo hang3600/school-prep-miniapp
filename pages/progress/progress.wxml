@@ -1,0 +1,70 @@
+<view class="screen">
+
+  <scroll-view class="content" scroll-y>
+    <view class="content-inner">
+      <!-- Streak 卡（橙渐变） -->
+      <view class="streak">
+        <view class="streak-left">
+          <text class="streak-label">连续打卡</text>
+          <view class="streak-num-row">
+            <text class="streak-num num">{{streakDays}}</text>
+            <text class="streak-unit">天</text>
+          </view>
+        </view>
+        <view class="streak-medal">
+          <image class="streak-medal-img" src="/images/icons/ic-medal.svg" mode="aspectFit" />
+        </view>
+      </view>
+
+      <!-- 学段切换 -->
+      <view class="chip-row">
+        <view wx:for="{{stageChips}}" wx:key="key"
+              class="chip {{item.active ? 'active' : ''}}"
+              hover-class="hv-press" hover-stay-time="60"
+              data-key="{{item.key}}" bindtap="onStageChip">
+          {{item.label}}
+        </view>
+      </view>
+
+      <!-- 本学段分类完成度（可点导航） -->
+      <view class="section-head">
+        <text class="section-title">{{stageLabel}} · 分类完成度</text>
+        <text class="section-sub">整体 {{overallPercent}}%</text>
+      </view>
+      <view class="cat-list">
+        <view wx:for="{{cats}}" wx:key="key"
+              class="cat-row {{item.complete ? 'done' : ''}}"
+              hover-class="hv-press" hover-stay-time="60"
+              data-key="{{item.key}}" bindtap="onCatTap">
+          <view class="cat-badge" style="background:{{item.tint}}">
+            <image class="cat-icon-img" src="/images/icons/ic-cat-{{item.key}}.svg" mode="aspectFit" />
+          </view>
+          <view class="cat-mid">
+            <view class="cat-row-top">
+              <text class="cat-name">{{item.label}}</text>
+              <text class="cat-pct num">{{item.percent}}%</text>
+            </view>
+            <view class="cat-track">
+              <view class="cat-fill" style="width:{{item.percent}}%"></view>
+            </view>
+            <text class="cat-sub">{{item.complete ? '已全部装包' : '已装包 ' + item.packed + ' / ' + item.total + ' 件'}}</text>
+          </view>
+          <image wx:if="{{item.complete}}" class="cat-check" src="/images/icons/ic-check.svg" mode="aspectFit" />
+          <text wx:else class="cat-arrow">›</text>
+        </view>
+      </view>
+
+      <!-- 我的成就 -->
+      <text class="section-title">我的成就</text>
+      <view class="badge-grid">
+        <view wx:for="{{badges}}" wx:key="name" class="badge-cell {{item.unlocked ? '' : 'locked'}}">
+          <view class="badge-icon">
+            <image class="badge-img" src="/images/icons/ic-medal.svg" mode="aspectFit" />
+          </view>
+          <text class="badge-name">{{item.name}}</text>
+          <text class="badge-state">{{item.unlocked ? '已解锁' : '未解锁'}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

@@ -1,0 +1,8 @@
+<view class="empty">
+  <view class="empty-circle">
+    <image class="empty-illu" src="/images/icons/illu-empty.svg" mode="aspectFit" />
+  </view>
+  <text class="empty-title">{{title}}</text>
+  <text class="empty-sub">{{sub}}</text>
+  <view class="empty-btn" hover-class="hv-press" hover-stay-time="60" bindtap="onAction">{{btnText}}</view>
+</view>

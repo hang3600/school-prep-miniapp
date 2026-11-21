@@ -1,0 +1,146 @@
+<view class="screen">
+
+  <scroll-view class="content" scroll-y>
+    <view class="content-inner">
+      <!-- Hero 总进度 -->
+      <view class="hero">
+        <view class="hero-top">
+          <text class="hero-title">开学准备进度</text>
+          <image class="hero-deco" src="/images/icons/ic-bag.svg" mode="aspectFit" />
+        </view>
+        <!-- 未开始（一件没勾）：不展示空 0%，改讲清「已经替你列好了什么」 -->
+        <block wx:if="{{started}}">
+          <view class="hero-num-row">
+            <text class="hero-num num">{{totalPercent}}</text>
+            <text class="hero-pct">%</text>
+          </view>
+          <text class="hero-sub">{{heroSub}}</text>
+        </block>
+        <block wx:else>
+          <view class="hero-num-row">
+            <text class="hero-num num">{{totalCount}}</text>
+            <text class="hero-pct">件</text>
+          </view>
+          <text class="hero-sub">{{heroSub}}</text>
+        </block>
+        <text class="hero-desc">{{heroDesc}}</text>
+        <view class="hero-track">
+          <view class="hero-fill" style="width:{{totalPercent}}%"></view>
+        </view>
+
+        <!-- 开学倒计时（点击弹原生日期选择器，纯本地存储） -->
+        <picker mode="date" start="{{dateStart}}" end="{{dateEnd}}" bindchange="onDateChange">
+          <view class="cd-row" hover-class="cd-press" hover-stay-time="60">
+            <view class="cd-ic-wrap">
+              <image class="cd-ic" src="/images/icons/ic-calendar.svg" mode="aspectFit" />
+            </view>
+            <view class="cd-main">
+              <text class="cd-label">{{countdownText}}</text>
+              <text class="cd-advice">{{advice}}</text>
+            </view>
+            <text class="cd-edit">{{cdEdit}}</text>
+          </view>
+        </picker>
+      </view>
+
+      <!-- 清单预览：首页直接展示真实物品，证明「替你想到了」（showPreview 可隐藏，便于 A/B 对比） -->
+      <view class="preview-card" wx:if="{{showPreview}}">
+        <view class="preview-head">
+          <text class="preview-title">清单抢先看 · {{stageLabel}} · {{previewCount}} 件</text>
+          <!-- 行动指令与数量分工：数量在标题，右侧只说「去整理」，避免「查看全部」误导为展示全部清单
+               （实际跳到下一个未完成分类，与底部 CTA 同一动线） -->
+          <text class="preview-more" hover-class="hv-press" hover-stay-time="60" bindtap="onStartTap">去整理 ›</text>
+        </view>
+        <view class="preview-list">
+          <view wx:for="{{previewItems}}" wx:key="id" class="preview-item">
+            <view class="dot {{item.statusClass}}"></view>
+            <text class="preview-name">{{item.name}}</text>
+            <text class="preview-tag {{item.must ? 'must' : 'opt'}}">{{item.must ? '必带' : '选带'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 学段切换（默认大学选中） -->
+      <text class="section-title">选择学段</text>
+      <view class="stage-seg">
+        <view
+          wx:for="{{stages}}"
+          wx:key="key"
+          class="stage-pill {{stage === item.key ? 'active' : ''}}"
+          hover-class="hv-press"
+          hover-stay-time="60"
+          data-key="{{item.key}}"
+          bindtap="onStageTap"
+        >{{item.label}}</view>
+      </view>
+
+      <!-- 分类宫格 -->
+      <text class="section-title">入学物品分类</text>
+      <view class="grid">
+        <view
+          wx:for="{{categories}}"
+          wx:key="key"
+          class="grid-cell"
+          hover-class="hv-press"
+          hover-stay-time="60"
+          data-key="{{item.key}}"
+          bindtap="onCategoryTap"
+        >
+          <view class="grid-icon" style="background:{{item.tint}}">
+            <image class="grid-icon-img" src="/images/icons/ic-cat-{{item.key}}.svg" mode="aspectFit" />
+          </view>
+          <text class="grid-label">{{item.label}}</text>
+          <text class="grid-count num">{{item.count}}</text>
+        </view>
+      </view>
+
+      <!-- 强 CTA：首页承接主入口，直接进清单（置于分类宫格下方，强化「选学段→看分类→开始整理」动线） -->
+      <view class="cta-wrap">
+        <view class="cta-btn" hover-class="cta-press" hover-stay-time="60" bindtap="onStartTap">
+          <view class="cta-main">
+            <text class="cta-title">{{ctaLabel}}</text>
+            <text class="cta-sub">{{stageLabel}} · 已按必带/选带分好</text>
+          </view>
+          <text class="cta-arrow">›</text>
+        </view>
+      </view>
+
+      <!-- 今日整理小贴士（按日期轮换，纯本地） -->
+      <view class="tips-card">
+        <view class="tips-head">
+          <image class="tips-ic" src="/images/icons/ic-backpack.svg" mode="aspectFit" />
+          <text class="tips-title">今日开学小贴士</text>
+        </view>
+        <text class="tips-text">{{tip}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 首次学段引导弹层（自定义半屏 2×2 卡片） -->
+  <view wx:if="{{stageGuideVisible}}" class="sg-mask" bindtap="onStageGuideLater">
+    <view class="sg-sheet" catchtap="noop">
+      <view class="sg-handle"></view>
+      <view class="sg-title">先选一个你的学段</view>
+      <view class="sg-sub">清单会按学段调整，之后可在首页随时切换</view>
+      <view class="sg-grid">
+        <view
+          wx:for="{{stages}}"
+          wx:key="key"
+          class="sg-card {{stage === item.key ? 'active' : ''}}"
+          hover-class="hv-press"
+          hover-stay-time="60"
+          data-key="{{item.key}}"
+          bindtap="onStageGuidePick"
+        >
+          <view class="sg-card-icon" style="background:{{item.color}}">{{item.short}}</view>
+          <view class="sg-card-name">{{item.label}}</view>
+          <view class="sg-card-desc">{{item.desc}}</view>
+          <view wx:if="{{stage === item.key}}" class="sg-card-check">
+            <view class="sg-card-check-inner"></view>
+          </view>
+        </view>
+      </view>
+      <view class="sg-later" hover-class="hv-press" hover-stay-time="60" bindtap="onStageGuideLater">稍后再说</view>
+    </view>
+  </view>
+</view>

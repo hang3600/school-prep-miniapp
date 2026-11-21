@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- 主体（白）：用于品牌蓝容器上 -->
+  <rect x="4.5" y="6.5" width="15" height="13.5" rx="3" fill="#FFFFFF"/>
+  <!-- 顶部双耳 -->
+  <rect x="8.25" y="3.75" width="2.25" height="5" rx="1.1" fill="#FFFFFF"/>
+  <rect x="13.5" y="3.75" width="2.25" height="5" rx="1.1" fill="#FFFFFF"/>
+  <!-- 日期格（品牌蓝，白主体上可见，传达「日历」语义） -->
+  <rect x="7" y="10" width="3" height="3" rx="0.8" fill="#3D6FF5"/>
+  <rect x="14" y="10" width="3" height="3" rx="0.8" fill="#3D6FF5"/>
+  <rect x="7" y="15" width="3" height="3" rx="0.8" fill="#3D6FF5"/>
+  <!-- 高亮「今天」：蓝圆 + 白内点 -->
+  <circle cx="15.5" cy="16.5" r="2" fill="#3D6FF5"/>
+  <circle cx="15.5" cy="16.5" r="0.95" fill="#FFFFFF"/>
+</svg>

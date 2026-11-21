@@ -1,0 +1,79 @@
+<view class="screen">
+
+  <scroll-view class="content" scroll-y>
+    <view class="content-inner">
+      <!-- 今日打卡 -->
+      <view class="card checkin-card">
+        <view class="cc-head">
+          <view class="cc-icon">
+            <image class="cc-icon-img" src="/images/icons/ic-medal.svg" mode="aspectFit" />
+          </view>
+          <view class="cc-head-mid">
+            <text class="cc-title">今日开学打卡</text>
+            <text class="cc-sub">每天整理一点点，开学不慌</text>
+          </view>
+          <view wx:if="{{checkedInToday}}" class="cc-done">
+            <image class="cc-check" src="/images/icons/ic-check.svg" mode="aspectFit" />
+            <text>已打卡</text>
+          </view>
+        </view>
+
+        <view class="cc-stats">
+          <view class="cc-stat">
+            <text class="cc-num num">{{streak}}</text>
+            <text class="cc-label">连续天数</text>
+          </view>
+          <view class="cc-divider"></view>
+          <view class="cc-stat">
+            <text class="cc-num num">{{total}}</text>
+            <text class="cc-label">累计打卡</text>
+          </view>
+        </view>
+
+        <view class="cc-btn {{checkedInToday ? 'done' : ''}}" hover-class="hv-press" hover-stay-time="60" bindtap="onCheckIn">
+          {{checkedInToday ? '今日已完成' : '立即打卡'}}
+        </view>
+      </view>
+
+      <!-- 近 7 天 -->
+      <view class="card week-card">
+        <text class="sec-title">最近 7 天</text>
+        <view class="week-row">
+          <view wx:for="{{week}}" wx:key="key" class="week-cell">
+            <text class="week-label">{{item.label}}</text>
+            <view class="week-dot {{item.checked ? 'on' : ''}} {{item.today ? 'today' : ''}}"></view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 提醒设置 -->
+      <view class="card set-card">
+        <text class="sec-title">提醒设置</text>
+        <view class="set-row">
+          <view class="set-mid">
+            <text class="set-label">每日提醒</text>
+            <text class="set-desc">到点后打开小程序，会提醒你打卡</text>
+          </view>
+          <switch checked="{{enabled}}" color="#3D6FF5" bindchange="onToggleRemind" />
+        </view>
+
+        <picker mode="selector" range="{{hours}}" value="{{hourIndex}}" bindchange="onHourChange">
+          <view class="set-row picker-row">
+            <view class="set-mid">
+              <text class="set-label">提醒时间</text>
+              <text class="set-desc">每天 {{hours[hourIndex]}}:00 之后提醒</text>
+            </view>
+            <text class="set-value num">{{hours[hourIndex]}}:00</text>
+            <image class="set-chevron" src="/images/icons/ic-chevron.svg" mode="aspectFit" />
+          </view>
+        </picker>
+      </view>
+
+      <!-- 说明 -->
+      <view class="tip-card">
+        <text class="tip-title">关于提醒</text>
+        <text class="tip-text">本小程序为纯本地工具，没有服务器，因此无法在后台主动推送通知。开启提醒后，在你设定的时间之后打开小程序，会看到打卡提示。所有打卡记录仅保存在本机。</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

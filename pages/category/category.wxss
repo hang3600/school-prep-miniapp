@@ -1,0 +1,99 @@
+.screen {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-grad);
+}
+
+.content { flex: 1; overflow: hidden; }
+.content-inner {
+  padding: 20rpx var(--sp-screen-x) 0;
+  padding-bottom: calc(var(--tab-bar-h) + env(safe-area-inset-bottom) + 30rpx);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+/* 搜索 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: var(--r-btn);
+  padding: 0 23rpx;
+  height: 77rpx;
+  box-shadow: var(--shadow-1);
+}
+.cat-intro {
+  display: block;
+  font-size: var(--fs-sub);
+  color: var(--ink-2);
+  margin-top: 14rpx;
+  margin-bottom: 4rpx;
+  padding: 0 4rpx;
+}
+.search-ic { width: 38rpx; height: 38rpx; margin-right: 15rpx; }
+.search-input { flex: 1; font-size: var(--fs-body); color: var(--ink); }
+
+/* 最近添加 */
+.recent-scroll { white-space: nowrap; }
+.recent-row { display: flex; flex-direction: row; gap: 15rpx; padding: 4rpx 0; }
+.recent-chip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--soft-blue);
+  color: var(--brand);
+  font-size: var(--fs-indicator);
+  font-weight: 600;
+  padding: 10rpx 23rpx;
+  border-radius: var(--r-iconbg);
+  flex-shrink: 0;
+}
+
+/* 分类列表 */
+.section-title { font-size: var(--fs-section); font-weight: 600; color: var(--ink); margin-top: 8rpx; }
+.cat-list { display: flex; flex-direction: column; gap: 23rpx; }
+.cat-card {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: var(--r-card);
+  padding: 27rpx;
+  box-shadow: var(--shadow-1);
+}
+.cat-icon {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: var(--r-iconbg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cat-icon-img { width: 52rpx; height: 52rpx; }
+.cat-mid { flex: 1; display: flex; flex-direction: column; gap: 6rpx; margin-left: 23rpx; }
+.cat-name { font-size: var(--fs-section); font-weight: 600; color: var(--ink); }
+.cat-desc { font-size: var(--fs-indicator); color: var(--gray); }
+.cat-count { font-size: var(--fs-body); font-weight: 600; color: var(--gray); }
+.cat-chevron { width: 30rpx; height: 30rpx; margin-left: 12rpx; opacity: 0.6; }
+
+/* 触感反馈 */
+.cat-card:active { transform: scale(0.98); }
+.recent-chip:active { opacity: 0.75; }
+
+/* 搜索无结果空态 */
+.search-empty {
+  background: #ffffff;
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-1);
+  padding: 60rpx 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.se-text { font-size: var(--fs-sub); color: var(--gray); }
+
+/* ===== 按压反馈过渡 ===== */
+.cat-card {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
