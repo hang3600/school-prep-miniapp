@@ -57,9 +57,7 @@
 .stat-num { font-size: 46rpx; font-weight: 700; color: var(--brand); line-height: 1; }
 .stat-label { font-size: var(--fs-indicator); color: var(--gray); }
 .stat-trend { font-size: 21rpx; }
-.stat-trend.up { color: var(--success); }
 .stat-trend.mid { color: var(--gray); }
-.stat-trend.brand { color: var(--brand); }
 
 /* 菜单 */
 .menu-group { display: flex; flex-direction: column; gap: 12rpx; }

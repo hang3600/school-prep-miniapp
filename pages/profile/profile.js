@@ -26,9 +26,9 @@ Page({
     stageLabel: '大学',
     grade: 2026,
     stats: [
-      { key: 'done', value: 0, label: '已整理', trend: '暂无数据', trendType: 'up' },
-      { key: 'streak', value: 0, label: '连续天', trend: '去打卡', trendType: 'brand' },
-      { key: 'badge', value: 0, label: '徽章', trend: '刚开始', trendType: 'brand' }
+      { key: 'done', value: 0, label: '已整理', trend: '暂无数据', trendType: 'mid' },
+      { key: 'streak', value: 0, label: '连续天', trend: '累计 0 天', trendType: 'mid' },
+      { key: 'badge', value: 0, label: '徽章', trend: '0/4 已解锁', trendType: 'mid' }
     ],
     groups: [
       {
@@ -84,27 +84,9 @@ Page({
     this.setData({
       stageLabel,
       stats: [
-        {
-          key: 'done',
-          value: prog.done,
-          label: '已整理',
-          trend: prog.total ? '共 ' + prog.total + ' 件' : '暂无数据',
-          trendType: 'up'
-        },
-        {
-          key: 'streak',
-          value: st.streak,
-          label: '连续天',
-          trend: st.streak > 0 ? '保持中' : '去打卡',
-          trendType: st.streak > 0 ? 'mid' : 'brand'
-        },
-        {
-          key: 'badge',
-          value: badge.count,
-          label: '徽章',
-          trend: badge.tip,
-          trendType: 'brand'
-        }
+        { key: 'done', value: prog.done, label: '已整理', trend: prog.total ? '共 ' + prog.total + ' 件' : '暂无数据', trendType: 'mid' },
+        { key: 'streak', value: st.streak, label: '连续天', trend: '累计 ' + st.total + ' 天', trendType: 'mid' },
+        { key: 'badge', value: badge.count, label: '徽章', trend: badge.count + '/4 已解锁', trendType: 'mid' }
       ]
     });
   },

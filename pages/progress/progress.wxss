@@ -14,18 +14,18 @@
   gap: var(--sp-gap);
 }
 
-/* Streak 卡 */
+/* Streak 卡：绿系浅底，降饱和让位品牌绿；保留渐变/圆角/阴影/大数字的卡片质感（不删结构） */
 .streak {
-  background: linear-gradient(135deg, #F5B36B 0%, #E8913D 100%);
+  background: linear-gradient(135deg, #E7F3ED 0%, #DCEFE5 100%);
   border-radius: var(--r-card);
   padding: 38rpx;
   box-shadow: var(--shadow-2);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #ffffff;
+  color: var(--brand-deep);
 }
-.streak-label { font-size: var(--fs-sub); opacity: 0.92; }
+.streak-label { font-size: var(--fs-sub); }
 .streak-num-row { display: flex; align-items: baseline; margin-top: 10rpx; }
 .streak-num { font-size: 76rpx; font-weight: 700; line-height: 1; }
 .streak-unit { font-size: 31rpx; font-weight: 600; margin-left: 6rpx; }
@@ -33,7 +33,7 @@
   width: 110rpx;
   height: 110rpx;
   border-radius: 55rpx;
-  background: rgba(255, 255, 255, 0.22);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,10 +104,10 @@
   overflow: hidden;
 }
 .cat-fill { height: 100%; background: var(--brand); border-radius: 8rpx; }
-.cat-sub { display: block; margin-top: 10rpx; font-size: 22rpx; color: #a7a398; }
-.cat-row.done .cat-sub { color: #36a96b; }
+.cat-sub { display: block; margin-top: 10rpx; font-size: 22rpx; color: var(--gray); }
+.cat-row.done .cat-sub { color: var(--brand-deep); }
 .cat-check { width: 40rpx; height: 40rpx; flex-shrink: 0; }
-.cat-arrow { font-size: 40rpx; color: #d8d5c9; flex-shrink: 0; line-height: 1; }
+.cat-arrow { font-size: 40rpx; color: var(--gray); flex-shrink: 0; line-height: 1; }
 
 /* 成就 */
 .badge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 23rpx; }
@@ -126,7 +126,7 @@
   width: 80rpx;
   height: 80rpx;
   border-radius: 40rpx;
-  background: var(--brand-soft);
+  background: var(--brand);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -136,4 +136,4 @@
 .badge-cell.locked .badge-img { opacity: 0.4; }
 .badge-name { font-size: var(--fs-indicator); font-weight: 600; color: var(--ink); text-align: center; }
 .badge-state { font-size: 21rpx; color: var(--gray); }
-.badge-cell.locked .badge-state { color: #a7a398; }
+.badge-cell.locked .badge-state { color: var(--gray); }

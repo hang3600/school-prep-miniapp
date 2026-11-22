@@ -7,7 +7,6 @@
         <image class="search-ic" src="/images/icons/ic-search.svg" mode="aspectFit" />
         <input class="search-input" placeholder="搜索开学必备物品" value="{{keyword}}" bindinput="onSearch" confirm-type="search" />
       </view>
-      <text class="cat-intro">军训必备 · 宿舍用品 · 住校必备 · 行李箱整理，7大分类全覆盖</text>
 
       <!-- 最近添加（尚无自定义物品时隐藏） -->
       <block wx:if="{{recent.length > 0}}">

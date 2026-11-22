@@ -24,14 +24,6 @@
   height: 77rpx;
   box-shadow: var(--shadow-1);
 }
-.cat-intro {
-  display: block;
-  font-size: var(--fs-sub);
-  color: var(--ink-2);
-  margin-top: 14rpx;
-  margin-bottom: 4rpx;
-  padding: 0 4rpx;
-}
 .search-ic { width: 38rpx; height: 38rpx; margin-right: 15rpx; }
 .search-input { flex: 1; font-size: var(--fs-body); color: var(--ink); }
 

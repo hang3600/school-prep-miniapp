@@ -2,7 +2,7 @@
 
   <scroll-view class="content" scroll-y>
     <view class="content-inner">
-      <!-- Streak 卡（橙渐变） -->
+      <!-- Streak 卡（绿系浅底） -->
       <view class="streak">
         <view class="streak-left">
           <text class="streak-label">连续打卡</text>
@@ -47,7 +47,8 @@
             <view class="cat-track">
               <view class="cat-fill" style="width:{{item.percent}}%"></view>
             </view>
-            <text class="cat-sub">{{item.complete ? '已全部装包' : '已装包 ' + item.packed + ' / ' + item.total + ' 件'}}</text>
+            <!-- 三选二：百分比 + 进度条已表达进度，未完成不再重复「已装包 N/M 件」；完成态保留仪式文案 -->
+            <text wx:if="{{item.complete}}" class="cat-sub">已全部装包</text>
           </view>
           <image wx:if="{{item.complete}}" class="cat-check" src="/images/icons/ic-check.svg" mode="aspectFit" />
           <text wx:else class="cat-arrow">›</text>
@@ -59,7 +60,7 @@
       <view class="badge-grid">
         <view wx:for="{{badges}}" wx:key="name" class="badge-cell {{item.unlocked ? '' : 'locked'}}">
           <view class="badge-icon">
-            <image class="badge-img" src="/images/icons/ic-medal.svg" mode="aspectFit" />
+            <image class="badge-img" src="/images/icons/{{item.icon}}.svg" mode="aspectFit" />
           </view>
           <text class="badge-name">{{item.name}}</text>
           <text class="badge-state">{{item.unlocked ? '已解锁' : '未解锁'}}</text>

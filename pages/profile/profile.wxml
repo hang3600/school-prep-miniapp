@@ -19,6 +19,7 @@
         <view wx:for="{{stats}}" wx:key="key" class="stat-cell" hover-class="hv-press" hover-stay-time="60" data-key="{{item.key}}" bindtap="onStatTap">
           <text class="stat-num num">{{item.value}}</text>
           <text class="stat-label">{{item.label}}</text>
+          <!-- 辅助行只放纯数据（共 N 件 / 累计 N 天 / N/4 已解锁），不写「继续加油」类凑数文案 -->
           <text class="stat-trend {{item.trendType}}">{{item.trend}}</text>
         </view>
       </view>

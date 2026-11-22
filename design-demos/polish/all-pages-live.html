@@ -8,7 +8,7 @@
   /* rpx → px：390/750 = 0.52；令牌/字号/间距/颜色全部取自 app.wxss + 各页 wxss 真实值 */
   :root{
     --brand:#2F8F6B; --brand-deep:#247454; --brand-soft:#E7F3ED;
-    --accent:#F2A65A; --gray:#8C8A80; --ink:#242922; --ink-2:#5C5A50;
+    --accent:#F2A65A; --gray:#6E6C62; --ink:#242922; --ink-2:#5C5A50;
     --bg:#F7F6F1; --border:#E6E4DB; --success:#2F8F6B;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -31,7 +31,6 @@
   .search-bar{display:flex; align-items:center; background:#fff; border-radius:14px; padding:0 12px; height:40px; box-shadow:0 2px 8px rgba(0,0,0,.06);}
   .search-ic{width:19px;height:19px;color:var(--gray);}
   .search-input{font-size:14px; color:var(--gray); margin-left:8px;}
-  .cat-intro{font-size:13px; color:var(--ink-2); display:block; margin:-6px 0 -8px 2px;}
   .cat-list{display:flex; flex-direction:column; gap:12px;}
   .cat-card{display:flex; align-items:center; background:#fff; border-radius:16.1px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,.06); gap:12px;}
   .cat-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
@@ -68,11 +67,11 @@
   .copy-btn{background:#fff;border:1px solid var(--brand);color:var(--brand);}
 
   /* 进度页 */
-  .streak{background:linear-gradient(135deg,#F5B36B,#E8913D);border-radius:16.1px;padding:19.8px;box-shadow:0 4px 16px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between;color:#fff;}
-  .streak-label{font-size:13px;opacity:.92;}
+  .streak{background:linear-gradient(135deg,#E7F3ED,#DCEFE5);border-radius:16.1px;padding:19.8px;box-shadow:0 4px 16px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between;color:var(--brand-deep);}
+  .streak-label{font-size:13px;}
   .streak-num{font-size:40px;font-weight:700;line-height:1;margin-top:5px;}
   .streak-unit{font-size:16px;font-weight:600;}
-  .medal{width:57px;height:57px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:28px;}
+  .medal{width:57px;height:57px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;}
   .chip-row{display:flex;gap:8px;flex-wrap:wrap;}
   .chip{padding:7.3px 15.6px;background:#fff;border-radius:99px;font-size:13px;font-weight:600;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.06);}
   .chip.active{background:var(--brand);color:#fff;}
@@ -86,16 +85,16 @@
   .cat-pct{font-size:13px;font-weight:600;color:var(--brand);}
   .cat-track{height:7.3px;background:var(--brand-soft);border-radius:4px;overflow:hidden;}
   .cat-fill{height:100%;background:var(--brand);border-radius:4px;}
-  .cat-sub{display:block;margin-top:5.2px;font-size:11.4px;color:#a7a398;}
-  .cat-arrow{font-size:20px;color:#d8d5c9;}
+  .cat-sub{display:block;margin-top:5.2px;font-size:11.4px;color:var(--gray);}
+  .cat-arrow{font-size:20px;color:var(--gray);}
   .badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
   .badge-cell{background:#fff;border-radius:16.1px;padding:14px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
   .badge-cell.locked{background:#f0efe9;}
-  .badge-icon{width:41.6px;height:41.6px;border-radius:50%;background:var(--brand-soft);display:flex;align-items:center;justify-content:center;font-size:22px;}
+  .badge-icon{width:41.6px;height:41.6px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:22px;}
   .badge-cell.locked .badge-icon{background:#e6e4db;}
   .badge-name{font-size:12px;font-weight:600;color:var(--ink);text-align:center;}
   .badge-state{font-size:10.9px;color:var(--gray);}
-  .badge-cell.locked .badge-state{color:#a7a398;}
+  .badge-cell.locked .badge-state{color:var(--gray);}
 
   /* 我的页 */
   .profile-card{background:linear-gradient(135deg,#e7f3ed,#cde9dc);border-radius:16.1px;padding:19.8px;display:flex;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.06);}
@@ -155,7 +154,6 @@
   <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div><div class="nav">物品分类</div>
   <div class="content-inner">
     <div class="search-bar"><span class="search-ic">⌕</span><span class="search-input">搜索开学必备物品</span></div>
-    <span class="cat-intro">军训必备 · 宿舍用品 · 住校必备 · 行李箱整理，7大分类全覆盖</span>
     <span class="section-title">开学物品全部分类</span>
     <div class="cat-list">
       <div class="cat-card"><div class="cat-icon" style="background:#E7F3ED">🪪</div><div class="cat-mid"><span class="cat-name">证件材料</span><span class="cat-desc">身份证、录取通知书、学生证</span></div><span class="cat-count">12</span><span class="chev">›</span></div>
@@ -204,14 +202,14 @@
     <div class="streak"><div><span class="streak-label">连续打卡</span><div><span class="streak-num">7</span><span class="streak-unit">天</span></div></div><div class="medal">🏅</div></div>
     <div class="chip-row"><span class="chip active">大学</span><span class="chip">高中</span><span class="chip">初中</span><span class="chip">小学</span></div>
     <div class="section-head"><span class="section-title">大学 · 分类完成度</span><span class="section-sub">整体 35%</span></div>
-    <div class="cat-row"><div class="cat-badge" style="background:#E7F3ED">🪪</div><div class="cat-mid"><div class="cat-row-top"><span class="cat-name">证件材料</span><span class="cat-pct">33%</span></div><div class="cat-track"><div class="cat-fill" style="width:33%"></div></div><span class="cat-sub">已装包 4 / 12 件</span></div><span class="cat-arrow">›</span></div>
-    <div class="cat-row"><div class="cat-badge" style="background:#E6F7EE">🧴</div><div class="cat-mid"><div class="cat-row-top"><span class="cat-name">洗漱用品</span><span class="cat-pct">0%</span></div><div class="cat-track"><div class="cat-fill" style="width:0%"></div></div><span class="cat-sub">已装包 0 / 9 件</span></div><span class="cat-arrow">›</span></div>
-    <div class="cat-row"><div class="cat-badge" style="background:#FFF4DC">✏️</div><div class="cat-mid"><div class="cat-row-top"><span class="cat-name">学习文具</span><span class="cat-pct">21%</span></div><div class="cat-track"><div class="cat-fill" style="width:21%"></div></div><span class="cat-sub">已装包 3 / 14 件</span></div><span class="cat-arrow">›</span></div>
+    <div class="cat-row"><div class="cat-badge" style="background:#E7F3ED">🪪</div><div class="cat-mid"><div class="cat-row-top"><span class="cat-name">证件材料</span><span class="cat-pct">33%</span></div><div class="cat-track"><div class="cat-fill" style="width:33%"></div></div></div><span class="cat-arrow">›</span></div>
+    <div class="cat-row"><div class="cat-badge" style="background:#E6F7EE">🧴</div><div class="cat-mid"><div class="cat-row-top"><span class="cat-name">洗漱用品</span><span class="cat-pct">0%</span></div><div class="cat-track"><div class="cat-fill" style="width:0%"></div></div></div><span class="cat-arrow">›</span></div>
+    <div class="cat-row"><div class="cat-badge" style="background:#FFF4DC">✏️</div><div class="cat-mid"><div class="cat-row-top"><span class="cat-name">学习文具</span><span class="cat-pct">21%</span></div><div class="cat-track"><div class="cat-fill" style="width:21%"></div></div></div><span class="cat-arrow">›</span></div>
     <span class="section-title" style="margin-top:4px">我的成就</span>
     <div class="badge-grid">
-      <div class="badge-cell"><div class="badge-icon">🏅</div><span class="badge-name">初次整理</span><span class="badge-state">已解锁</span></div>
-      <div class="badge-cell"><div class="badge-icon">🏅</div><span class="badge-name">连续7天</span><span class="badge-state">已解锁</span></div>
-      <div class="badge-cell locked"><div class="badge-icon">🏅</div><span class="badge-name">全部分类</span><span class="badge-state">未解锁</span></div>
+      <div class="badge-cell"><div class="badge-icon">🎒</div><span class="badge-name">收纳达人</span><span class="badge-state">已解锁</span></div>
+      <div class="badge-cell"><div class="badge-icon">📋</div><span class="badge-name">清单高手</span><span class="badge-state">已解锁</span></div>
+      <div class="badge-cell locked"><div class="badge-icon">📅</div><span class="badge-name">打卡新星</span><span class="badge-state">未解锁</span></div>
     </div>
   </div>
   <div class="tabbar"><span class="tab-pill on">清单</span><span class="tab-pill">分类</span><span class="tab-pill">进度</span><span class="tab-pill">我的</span></div>
@@ -223,9 +221,9 @@
   <div class="content-inner">
     <div class="profile-card"><div class="avatar">👤</div><div class="profile-mid"><span class="profile-name">同学</span><span class="profile-stage">大学 · 2026 级新生</span></div><span style="color:#247454;opacity:.7">⚙</span></div>
     <div class="stat-row">
-      <div class="stat-cell"><span class="stat-num">26</span><span class="stat-label">已备物品</span><span class="stat-trend" style="color:#2F8F6B">进行中</span></div>
-      <div class="stat-cell"><span class="stat-num">7</span><span class="stat-label">连续打卡</span><span class="stat-trend" style="color:#2F8F6B">坚持中</span></div>
-      <div class="stat-cell"><span class="stat-num">2</span><span class="stat-label">已解锁成就</span><span class="stat-trend" style="color:#8C8A80">继续加油</span></div>
+      <div class="stat-cell"><span class="stat-num">26</span><span class="stat-label">已整理</span><span class="stat-trend" style="color:var(--gray)">共 75 件</span></div>
+      <div class="stat-cell"><span class="stat-num">7</span><span class="stat-label">连续天</span><span class="stat-trend" style="color:var(--gray)">累计 12 天</span></div>
+      <div class="stat-cell"><span class="stat-num">2</span><span class="stat-label">徽章</span><span class="stat-trend" style="color:var(--gray)">2/4 已解锁</span></div>
     </div>
     <div>
       <span class="menu-group-title">清单管理</span>

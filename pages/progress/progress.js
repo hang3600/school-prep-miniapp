@@ -84,9 +84,9 @@ Page({
       overallPercent: overall.percent,
       streakDays: st.streak,
       badges: [
-        { name: '收纳达人', unlocked: totalDone >= 10 },
-        { name: '清单高手', unlocked: anyFull },
-        { name: '打卡新星', unlocked: st.streak >= 3 }
+        { name: '收纳达人', icon: 'ic-bag', unlocked: totalDone >= 10 },
+        { name: '清单高手', icon: 'ic-list-white', unlocked: anyFull },
+        { name: '打卡新星', icon: 'ic-calendar', unlocked: st.streak >= 3 }
       ]
     });
   },

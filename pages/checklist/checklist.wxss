@@ -145,7 +145,7 @@
   box-shadow: var(--shadow-1);
 }
 .done-title { display: block; font-size: 31rpx; font-weight: 700; color: var(--brand); }
-.done-sub { display: block; margin-top: 10rpx; font-size: 24rpx; color: #6b7688; line-height: 1.5; }
+.done-sub { display: block; margin-top: 10rpx; font-size: 24rpx; color: var(--ink-2); line-height: 1.5; }
 .done-actions { display: flex; gap: 16rpx; margin-top: 23rpx; }
 .done-btn {
   flex: 1;
