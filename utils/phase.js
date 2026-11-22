@@ -6,7 +6,7 @@
  * 抽出原因：评审第 4 条「首页时间带母题向内页延伸」——内页若各写一套分段，
  * 口径会漂移；收口到此，首页改分段时内页自动跟随。
  */
-const store = require('../../utils/store.js');
+const store = require('./store.js');
 
 // 时间带四段：22+/8+/3+/0（与 COUNTDOWN_ADVICE 分段口径一致）
 const PHASE_BANDS = [

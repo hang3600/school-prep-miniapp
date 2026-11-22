@@ -3,6 +3,8 @@
  * 1. WXSS 括号/注释配对
  * 2. data 键 ↔ wxml 绑定交叉比对（未绑定 setData 变量 = 体验分告警源）
  * 3. 缓存收益量化：统计一次首页刷新 / 分类页刷新实际触发的 getStorageSync 次数
+ * 4. tab 页 onShow 首屏不应触发同步读
+ * 5. 相对 require 路径真实性：逐个解析磁盘目标，拦截「测试沙箱模糊匹配掩盖、真机却加载失败」的坏路径
  */
 
 const fs = require('fs');
@@ -100,4 +102,43 @@ console.log('[2] 未绑定 setData 变量: ' + (deadTotal === 0 ? 'OK 0 个' : d
     }
   });
   console.log('[4] tab 页 onShow 首屏同步读: ' + (bad4 === 0 ? 'OK 0 次（均已收口到 onReady）' : 'BAD ' + bad4));
+}
+
+// ---- 5. 相对 require 路径真实性 ----
+// harness 用关键字模糊匹配加载模块，会掩盖写错的相对路径（如 utils/phase.js 里
+// require('../../utils/store.js') 实际解析到项目外），真机/模拟器却直接报
+// "can not find module"。这里按微信真实解析规则逐个查磁盘，堵住这个盲区。
+{
+  const skip = new Set(['node_modules', '.git', 'design-demos']);
+  const jsFiles = [];
+  (function walk(d) {
+    fs.readdirSync(d).forEach((f) => {
+      if (skip.has(f)) return;
+      const p = path.join(d, f);
+      if (fs.statSync(p).isDirectory()) walk(p);
+      else if (f.endsWith('.js')) jsFiles.push(p);
+    });
+  })(ROOT);
+
+  let badPaths = 0;
+  let reqTotal = 0;
+  jsFiles.forEach((f) => {
+    // 先剥离块注释与行注释，避免注释里的 require 示例被误判为真实引用
+    const raw = fs.readFileSync(f, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const src = raw.split('\n').map((l) => l.split('//')[0]).join('\n');
+    const re = /require\(\s*['"]([^'"]+)['"]\s*\)/g;
+    let m;
+    while ((m = re.exec(src))) {
+      const spec = m[1];
+      if (!spec.startsWith('.')) continue; // 内建/低频模块不查
+      reqTotal += 1;
+      const target = path.resolve(path.dirname(f), spec);
+      const exists = [target, target + '.js', path.join(target, 'index.js')].some((p) => fs.existsSync(p));
+      if (!exists) {
+        console.log('  坏路径 ' + path.relative(ROOT, f) + ' -> ' + spec);
+        badPaths += 1;
+      }
+    }
+  });
+  console.log('[5] 相对 require 路径: ' + (badPaths === 0 ? 'OK ' + reqTotal + ' 条全部可达' : 'BAD ' + badPaths + ' 条失效'));
 }
