@@ -482,23 +482,23 @@
   flex-shrink: 0;
 }
 
-/* ===== 清单预览卡 ===== */
+/* ===== 清单抢先看：横向胶囊条（省空间，让宫格/CTA 进首屏） ===== */
 .preview-card {
   margin-top: var(--sp-gap);
   background: #ffffff;
   border: 1rpx solid var(--border);
   border-radius: var(--r-card);
-  padding: 30rpx;
+  padding: 22rpx 24rpx 24rpx;
   box-shadow: var(--shadow-1);
 }
 .preview-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 22rpx;
+  margin-bottom: 16rpx;
 }
 .preview-title {
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: 700;
   color: var(--ink);
 }
@@ -508,49 +508,56 @@
   flex-shrink: 0;
   margin-left: 16rpx;
 }
-.preview-list {
-  display: flex;
-  flex-direction: column;
+/* 横向滚动：scroll-x + white-space:nowrap，胶囊 inline-flex 不换行 */
+.preview-scroll {
+  width: 100%;
+  white-space: nowrap;
 }
-.preview-item {
-  display: flex;
+.chip {
+  display: inline-flex;
   align-items: center;
-  gap: 18rpx;
-  padding: 16rpx 0;
-  border-top: 1rpx solid #F0F1F4;
+  gap: 10rpx;
+  height: 52rpx;
+  padding: 0 20rpx;
+  margin-right: 12rpx;
+  border-radius: 26rpx;
+  vertical-align: middle;
+  background: var(--brand-soft);
 }
-.preview-item:first-child {
-  border-top: none;
+.chip-name {
+  font-size: 24rpx;
+  color: var(--brand-deep);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.chip.opt {
+  background: #F2F3F5;
+}
+.chip.opt .chip-name {
+  color: var(--gray);
+  font-weight: 500;
+}
+.chip.done {
+  background: #F2F3F5;
+}
+.chip.done .chip-name {
+  color: var(--gray);
+  font-weight: 400;
+  text-decoration: line-through;
+}
+.chip-more {
+  background: transparent;
+  border: 1rpx solid var(--border);
+  font-size: 24rpx;
+  color: var(--gray);
+  font-weight: 500;
 }
 .dot {
-  width: 18rpx;
-  height: 18rpx;
+  width: 14rpx;
+  height: 14rpx;
   border-radius: 50%;
   flex-shrink: 0;
 }
 .dot.st0 { background: #C9CDD4; }
 .dot.st1 { background: var(--brand); }
 .dot.st2 { background: #52C41A; }
-.preview-name {
-  font-size: 26rpx;
-  color: #3A3F4B;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.preview-tag {
-  font-size: 20rpx;
-  padding: 4rpx 14rpx;
-  border-radius: 16rpx;
-  flex-shrink: 0;
-}
-.preview-tag.must {
-  color: #C2410C;
-  background: #FFF1E6;
-}
-.preview-tag.opt {
-  color: #6B7280;
-  background: #F2F3F5;
-}

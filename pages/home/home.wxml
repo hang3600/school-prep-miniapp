@@ -43,21 +43,31 @@
         </picker>
       </view>
 
-      <!-- 清单预览：首页直接展示真实物品，证明「替你想到了」（showPreview 可隐藏，便于 A/B 对比） -->
+      <!-- 清单预览：首页直接展示真实物品，证明「替你想到了」（showPreview 可隐藏，便于 A/B 对比）
+           2026-11-22：5 行竖排 → 横向胶囊，高度 ~400rpx 压到 ~130rpx，
+           让学段切换 / 分类宫格 / CTA 进入首屏；物品名、必带选带、已勾状态都保留 -->
       <view class="preview-card" wx:if="{{showPreview}}">
         <view class="preview-head">
           <text class="preview-title">清单抢先看 · {{stageLabel}} · {{previewCount}} 件</text>
-          <!-- 行动指令与数量分工：数量在标题，右侧只说「去整理」，避免「查看全部」误导为展示全部清单
-               （实际跳到下一个未完成分类，与底部 CTA 同一动线） -->
           <text class="preview-more" hover-class="hv-press" hover-stay-time="60" bindtap="onStartTap">去整理 ›</text>
         </view>
-        <view class="preview-list">
-          <view wx:for="{{previewItems}}" wx:key="id" class="preview-item">
+        <scroll-view class="preview-scroll" scroll-x>
+          <view
+            wx:for="{{previewItems}}"
+            wx:key="id"
+            class="chip {{item.must ? 'must' : 'opt'}} {{item.statusClass !== 'st0' ? 'done' : ''}}"
+          >
             <view class="dot {{item.statusClass}}"></view>
-            <text class="preview-name">{{item.name}}</text>
-            <text class="preview-tag {{item.must ? 'must' : 'opt'}}">{{item.must ? '必带' : '选带'}}</text>
+            <text class="chip-name">{{item.name}}</text>
           </view>
-        </view>
+          <view
+            wx:if="{{previewCount > previewItems.length}}"
+            class="chip chip-more"
+            hover-class="hv-press"
+            hover-stay-time="60"
+            bindtap="onStartTap"
+          >+{{previewCount - previewItems.length}} 件 ›</view>
+        </scroll-view>
       </view>
 
       <!-- 学段切换（默认大学选中） -->
