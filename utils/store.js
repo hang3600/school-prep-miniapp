@@ -11,9 +11,13 @@
  *     primary: { ... }
  *   }
  * }
- * item = { id, name, must:Boolean, status:Number }
- *   status 三态：0 未准备 / 1 已备好 / 2 已装包
- *   （老数据 done:Boolean 在 read() 时自动迁移：done=true → status=2）
+ * item = { id, name, must:Boolean, status:Number, decision:Number }
+ *   status 三态（进度）：0 未准备 / 1 已备好 / 2 已装包
+ *     （老数据 done:Boolean 在 read() 时自动迁移：done=true → status=2）
+ *   decision 三态（决策，与 status 解耦）：0 从家带 / 1 到校买 / 2 到校再定
+ *     借鉴竞品「四态勾选」里「到校买 / 到校再定」两个真实决策，
+ *     与 status 组合成事实四态（进度圈 + 决策标签两个维度），不影响原有进度统计。
+ *     提醒文案（tip）为静态内容，不入库，渲染时由 content-enrich 按名称动态查。
  * 首次启动自动写入种子清单；勾选 / 添加自定义物品都会持久化。
  */
 
@@ -211,7 +215,8 @@ function seedItems(stage, cat) {
     name: it.name,
     must: !!it.must,
     core: !!CORE_SET[it.name],
-    status: 0
+    status: 0,
+    decision: 0 // 默认从家带；竞品四态里的「到校买/到校再定」由用户自行切换
   }));
 }
 
@@ -296,6 +301,9 @@ function migrate(state) {
           it.core = c;
           if (c) touched = true; // 仅 true 时回写，false 用默认值即可，减少写盘
         }
+        // decision 决策字段：老数据无此字段，内存补默认 0（从家带），不触发写盘
+        // （缺省值与默认一致，无需持久化；用户切换决策时 cycleDecision 会正常写盘）
+        if (typeof it.decision !== 'number') it.decision = 0;
       });
     });
   });
@@ -445,6 +453,20 @@ function cycleItem(stage, cat, id) {
   }
 }
 
+// 决策三态循环：从家带(0) → 到校买(1) → 到校再定(2) → 从家带(0)
+// 借鉴竞品「到校买 / 到校再定」两个真实决策，与 status 进度解耦：
+// 「到校买」= 不用从家背，到学校再买；「到校再定」= 等学校通知再决定。
+function cycleDecision(stage, cat, id) {
+  const s = read();
+  const arr = s.lists[stage] && s.lists[stage][cat];
+  if (!arr) return;
+  const it = arr.find((x) => x.id === id);
+  if (it) {
+    it.decision = ((typeof it.decision === 'number' ? it.decision : 0) + 1) % 3;
+    write(s);
+  }
+}
+
 // 从清单中移除一个物品（长按删除；种子与自定义物品均可移除）
 function removeItem(stage, cat, id) {
   const s = read();
@@ -467,7 +489,8 @@ function addItem(stage, cat, payload) {
     name,
     must: !!payload.must,
     core: getCoreMode(),
-    status: 0
+    status: 0,
+    decision: 0
   });
   write(s);
 }
@@ -554,6 +577,7 @@ module.exports = {
   markStageChosen,
   getChecklist,
   cycleItem,
+  cycleDecision,
   removeItem,
   addItem,
   computeStageProgress,

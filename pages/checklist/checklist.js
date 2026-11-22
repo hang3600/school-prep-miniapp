@@ -1,6 +1,7 @@
 const store = require('../../utils/store.js');
 const share = require('../../utils/share.js');
 const { CAT_MAP } = require('../../utils/categories.js');
+const contentEnrich = require('../../utils/content-enrich.js');
 
 Page({
   data: {
@@ -20,7 +21,12 @@ Page({
     nextCat: '',
     nextCatLabel: '',
     // 从分类页搜索跳转过来时的关键词：命中物品高亮 + 自动展开其分组（无关键词为空串）
-    kw: ''
+    kw: '',
+    // 分类说明卡（竞品内容落地）：一句提醒 + 详细说明，帮用户知道「怎么准备」而非干瞪物品名
+    adviceSubtitle: '',
+    adviceNote: '',
+    // 四态决策图例：仅「从家带」之外的决策出现过时显示，避免一进来看不懂
+    showDecisionLegend: false
   },
 
   onLoad(q) {
@@ -32,7 +38,14 @@ Page({
     // 搜索定位：decodeURIComponent 兜底，防止畸形编码抛异常中断 onLoad
     let kw = '';
     try { kw = q.kw ? decodeURIComponent(q.kw) : ''; } catch (e) { kw = q.kw || ''; }
-    this.setData({ cat: cat, kw: kw });
+    // 分类说明卡：取竞品内容库对该分类的一句提醒 + 详细说明（无则说明卡隐藏）
+    const advice = contentEnrich.getCatAdvice(cat);
+    this.setData({
+      cat: cat,
+      kw: kw,
+      adviceSubtitle: advice ? advice.subtitle : '',
+      adviceNote: advice ? advice.note : ''
+    });
     // 原生导航栏：标题动态设为当前分类名
     wx.setNavigationBarTitle({ title: CAT_MAP[cat] || '开学准备清单' });
     // 首屏渲染前不读写 storage：清单加载与引导弹窗延后到 onReady（首屏渲染完成后），
@@ -150,7 +163,16 @@ Page({
       prev[g.name] = { open: g.open, userToggled: g.userToggled };
     });
     const kw = this.data.kw || '';
+    // 内容增强：给渲染副本附加提醒文案 tip 与决策展示字段，不写回 store
+    // （groupByMust 返回的是浅拷贝，附加字段只影响本次渲染数据）
+    let hasDecision = false;
     groups.forEach((g) => {
+      g.items.forEach((it) => {
+        it.tip = contentEnrich.getTip(it.name) || '';
+        const d = it.decision || 0;
+        it.decisionLabel = d === 1 ? '到校买' : (d === 2 ? '到校再定' : '');
+        if (d !== 0) hasDecision = true;
+      });
       // 搜索定位：给命中物品打 hit 标记，命中分组强制展开（搜索意图优先于折叠记忆/自动收起）
       if (kw) {
         g.items.forEach((it) => { it.hit = (it.name || '').indexOf(kw) !== -1; });
@@ -171,7 +193,7 @@ Page({
       g.open = !allPacked;
       g.userToggled = false;
     });
-    this.setData({ groups });
+    this.setData({ groups, showDecisionLegend: hasDecision });
     this.recalc();
   },
 
@@ -242,6 +264,16 @@ Page({
     // 轻触感反馈：勾选是最高频动作，触觉反馈显著提升「产品感」
     if (typeof wx.vibrateShort === 'function') wx.vibrateShort({ type: 'light' });
     store.cycleItem(store.getStage(), this.data.cat, id);
+    this.loadList();
+  },
+
+  // 决策标签：三态循环 从家带(0) → 到校买(1) → 到校再定(2) → 从家带(0)
+  // 与 status 进度完全解耦——「到校买」不占行李，「到校再定」等学校通知，帮用户少带冤枉东西。
+  // 用 catchtap 阻止冒泡到物品行的 toggleItem（wxml 侧绑定）。
+  onCycleDecision(e) {
+    const id = e.currentTarget.dataset.id;
+    if (typeof wx.vibrateShort === 'function') wx.vibrateShort({ type: 'light' });
+    store.cycleDecision(store.getStage(), this.data.cat, id);
     this.loadList();
   },
 

@@ -156,6 +156,7 @@ function makeEnv(state) {
       if (norm.indexOf('checkin') !== -1) return load('utils/checkin.js');
       if (norm.indexOf('share') !== -1) return load('utils/share.js');
       if (norm.indexOf('categories') !== -1) return load('utils/categories.js');
+      if (norm.indexOf('content-enrich') !== -1 || norm.indexOf('contentEnrich') !== -1) return load('utils/content-enrich.js');
       if (norm.indexOf('seo') !== -1) return load('utils/seo.js');
       return {};
     };

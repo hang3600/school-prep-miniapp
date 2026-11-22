@@ -19,7 +19,25 @@
         <text class="sh-clear" hover-class="hv-press" hover-stay-time="60" bindtap="onClearKw">清除</text>
       </view>
 
-      <!-- 总进度 -->
+      <!-- 分类说明卡（竞品内容落地）：先告诉用户「这一类怎么准备」，再看具体物品 -->
+      <view wx:if="{{adviceSubtitle}}" class="advice-card">
+        <view class="ac-head">
+          <image class="ac-ic" src="/images/icons/ic-info.svg" mode="aspectFit" />
+          <text class="ac-subtitle">{{adviceSubtitle}}</text>
+        </view>
+        <text wx:if="{{adviceNote}}" class="ac-note">{{adviceNote}}</text>
+      </view>
+
+      <!-- 决策图例：用户切过「到校买/到校再定」后才出现，避免一进来就看到说明书 -->
+      <view wx:if="{{showDecisionLegend}}" class="decision-legend">
+        <text class="dl-label">物品右侧可切换：</text>
+        <text class="dl-home">从家带</text>
+        <text class="dl-sep">→</text>
+        <text class="dl-buy">到校买</text>
+        <text class="dl-sep">→</text>
+        <text class="dl-later">到校再定</text>
+      </view>
+
       <view class="progress-card">
         <view class="pc-top">
           <text class="pc-label">整理进度</text>
@@ -74,8 +92,24 @@
               <view wx:if="{{it.status === 1}}" class="check-dot"></view>
               <image wx:if="{{it.status === 2}}" class="check-ic" src="/images/icons/ic-check.svg" mode="aspectFit" />
             </view>
-            <text class="item-name {{it.status === 2 ? 'done' : ''}} {{it.status === 1 ? 'ready' : ''}} {{it.hit ? 'hit' : ''}}">{{it.name}}</text>
-            <text wx:if="{{it.hit}}" class="hit-tag">搜索命中</text>
+            <view class="item-body">
+              <view class="item-line">
+                <text class="item-name {{it.status === 2 ? 'done' : ''}} {{it.status === 1 ? 'ready' : ''}} {{it.hit ? 'hit' : ''}}">{{it.name}}</text>
+                <text wx:if="{{it.hit}}" class="hit-tag">搜索命中</text>
+              </view>
+              <!-- 提醒小字（竞品内容落地）：说清为什么带/怎么用，无提醒文案则不显示 -->
+              <text wx:if="{{it.tip}}" class="item-tip {{it.status === 2 ? 'done' : ''}}">{{it.tip}}</text>
+            </view>
+            <!-- 决策标签（竞品四态里的「到校买/到校再定」）：点一下循环切换，不占行李 -->
+            <view
+              class="decision-tag {{it.decision === 1 ? 'buy' : ''}} {{it.decision === 2 ? 'later' : ''}}"
+              hover-class="hv-press"
+              hover-stay-time="60"
+              data-id="{{it.id}}"
+              catchtap="onCycleDecision"
+            >
+              <text>{{it.decisionLabel || '从家带'}}</text>
+            </view>
           </view>
         </view>
       </view>

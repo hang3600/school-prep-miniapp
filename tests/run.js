@@ -10,6 +10,7 @@ const SUITES = [
   require('./privacy.test.js'),
   require('./features.test.js'),
   require('./category.test.js'),
+  require('./content.test.js'),
   require('./hardening.test.js')
 ];
 
