@@ -348,7 +348,6 @@
   margin-top: 36rpx;
 }
 .sg-card {
-  position: relative;
   background: #ffffff;
   border: 4rpx solid #E4E3DD;
   border-radius: 28rpx;
@@ -379,30 +378,7 @@
   font-weight: 700;
   color: #1A1B1C;
 }
-.sg-card-desc {
-  font-size: var(--fs-indicator);
-  color: #6B7280;
-}
-.sg-card-check {
-  position: absolute;
-  top: 16rpx;
-  right: 16rpx;
-  width: 32rpx;
-  height: 32rpx;
-  background: var(--brand);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.sg-card-check-inner {
-  width: 14rpx;
-  height: 7rpx;
-  border-left: 4rpx solid #ffffff;
-  border-bottom: 4rpx solid #ffffff;
-  transform: rotate(-45deg);
-  margin-top: -4rpx;
-}
+/* 减②④：卡片描述与选中勾选圈已移除，选中态靠 .sg-card.active 浅绿底+绿描边表达 */
 .sg-later {
   text-align: center;
   font-size: 28rpx;

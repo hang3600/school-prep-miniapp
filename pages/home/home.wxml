@@ -55,8 +55,7 @@
       <!-- 清单预览：首页直接展示真实物品，证明「替你想到了」（showPreview 可隐藏，便于 A/B 对比）
            2026-11-22：5 行竖排 → 横向胶囊，高度 ~400rpx 压到 ~130rpx，
            让学段切换 / 分类宫格 / CTA 进入首屏；物品名、必带选带、已勾状态都保留 -->
-      <!-- 学段切换（默认大学选中） -->
-      <text class="section-title">选择学段</text>
+      <!-- 学段切换（默认大学选中）：四个胶囊自解释，不再单独占一行小标题 -->
       <view class="stage-seg">
         <view
           wx:for="{{stages}}"
@@ -173,10 +172,6 @@
         >
           <view class="sg-card-icon" style="background:{{item.color}}">{{item.short}}</view>
           <view class="sg-card-name">{{item.label}}</view>
-          <view class="sg-card-desc">{{item.desc}}</view>
-          <view wx:if="{{stage === item.key}}" class="sg-card-check">
-            <view class="sg-card-check-inner"></view>
-          </view>
         </view>
       </view>
       <view class="sg-later" hover-class="hv-press" hover-stay-time="60" bindtap="onStageGuideLater">稍后再说</view>
