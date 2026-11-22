@@ -23,6 +23,11 @@
  * 2026-11-22 八大分类重排：竞品 10 类拆解合并为 8 类（172 件），
  * 分类 / 物品 / 必带 / 核心白名单的单源在 content-enrich.EIGHT_CATEGORIES，
  * 本文件只做数据层编排（学段裁剪、迁移、进度统计）。
+ *
+ * 2026-11-22 学段区分：每件物品的适用学段单源在 content-enrich.ITEM_STAGES /
+ * STAGE_ONLY_ITEMS，由 getStageItems(stage, cat) 派生各学段清单。
+ * 大学 172（全集不变）/ 高中 137 / 初中 82 / 小学 45。
+ * 旧的 STAGE_EXCLUDE + STAGE_EXTRA_ITEMS 两张隐藏表已废弃，改用统一标签。
  */
 
 // 八大分类 / 172 件物品 / 必带与核心白名单的唯一来源
@@ -42,69 +47,10 @@ content.EIGHT_CATEGORIES.forEach((c) => {
   SEED_ITEMS[c.key] = c.names.map((name, i) => ({ name, must: i < c.must }));
 });
 
-// ===== 学段专属物品（共用 172 件之外，按学段追加）=====
-// 设计原则：
-// ① 大学学段不动（保持 172 件，作为默认基准与迁移锚点）
-// ② 序号从共用清单长度之后连续编排，天然 ≥ LEGACY_SEED_COUNTS，
-//    老用户 migrate() 会自动追加这些新种子（已勾选项不受影响）
-// ③ 只追加不删除：老用户已有清单不会被裁剪，避免丢失勾选进度
-// ④ 八大分类后按语义归位：雨衣 / 保温杯 / 小雨伞归住宿寝室（竞品宿舍类），
-//    提神饮品归药品健康，避免塞进「洗漱护理」造成语义错配。
-const STAGE_EXTRA_ITEMS = {
-  high: {
-    // 高中：走读/住校，学业压力大，强调复习资料与作息用品
-    book: [
-      { name: '错题本 ×2', must: true },
-      { name: '高考真题卷', must: false },
-      { name: '充电台灯', must: true },
-      { name: '计时器', must: false }
-    ],
-    id: [{ name: '学籍档案', must: true }],
-    med: [{ name: '咖啡 / 提神饮品', must: false }],
-    laptop: [{ name: '学习平板（选带）', must: false }]
-  },
-  middle: {
-    // 初中：日常走读，物品更轻，强调校服与练习
-    book: [
-      { name: '练习册', must: true },
-      { name: '字帖', must: false },
-      { name: '书包（轻便款）', must: false }
-    ],
-    shirt: [{ name: '校服 ×2', must: true }],
-    bed: [{ name: '雨衣', must: false }],
-    id: [{ name: '学生卡', must: true }]
-  },
-  primary: {
-    // 小学：家长代劳，强调姓名标识、低龄友好餐具与文具
-    id: [{ name: '姓名贴 / 姓名章', must: true }],
-    bed: [
-      { name: '儿童保温杯', must: true },
-      { name: '小雨伞（儿童款）', must: false }
-    ],
-    book: [
-      { name: '铅笔套装', must: true },
-      { name: '橡皮 + 直尺', must: true },
-      { name: '拼音练习本', must: false }
-    ],
-    shirt: [{ name: '校服 ×2', must: true }],
-    laptop: [] // 小学不带电脑，共用清单里的电脑类由「快速模式」过滤掉
-  }
-};
-
-// 学段排除表：从共用清单里剔除明显不适合该学段的物品（按竞品新名字）。
-// 小学：不带手机/电脑/插排与床帘等住校装备（多为走读、家长代劳）
-// 初中：不含床帘与平板/移动硬盘（部分走读），但保留军训主体
-const STAGE_EXCLUDE = {
-  primary: {
-    laptop: ['手机', '手机充电器', '笔记本电脑', '电脑充电器和电脑包', 'U盘', '多孔插排'],
-    mil: ['高倍防晒霜或防晒喷雾', '军训鞋垫', '替换鞋垫', '防磨脚贴', '芦荟胶或晒后修护用品'],
-    bed: ['床帘（按宿舍规定）', '凉席（按季节）', '床垫或褥子']
-  },
-  middle: {
-    bed: ['床帘（按宿舍规定）'],
-    laptop: ['平板和手写笔（按需）', '移动硬盘（按需）']
-  }
-};
+// ===== 学段区分：单源在 content-enrich =====
+// ITEM_STAGES（每件基础物品的适用学段）+ STAGE_ONLY_ITEMS（学段专属物品）
+// 统一由 content.getStageItems(stage, cat) 派生，废弃旧的排除表 / 追加表。
+// 大学 172（全集基准不变）；高中 137 / 初中 82 / 小学 45。
 
 // 核心物品白名单（快速模式）：从 172 件里挑最高频的 20 件。
 // 与 EIGHT_CATEGORIES.core 单源对齐（5+3+2+3+3+4=20），用户自定义物品不参与核心模式。
@@ -142,17 +88,27 @@ function isCoreName(name) {
 const LEGACY_SEED_COUNTS = { id: 7, soap: 8, book: 6, bed: 5, laptop: 6, shirt: 6, mil: 10, med: 0 };
 
 // 生成某学段某分类的种子物品数组（id 唯一：s_学段_分类_序号）
+// 序号锚点：基础物品用其在 EIGHT_CATEGORIES.names 里的原始下标；学段专属物品
+// 从基础长度之后连续编排。这样低年级被过滤掉的高序号物品不会让前面 id 左移，
+// 老用户数据里 s_*_id_0 的语义保持稳定，migrate 的 exists 判定不失效。
 function seedItems(stage, cat) {
-  const excl = (STAGE_EXCLUDE[stage] && STAGE_EXCLUDE[stage][cat]) || [];
-  const baseAll = SEED_ITEMS[cat] || [];
-  const extra = (STAGE_EXTRA_ITEMS[stage] && STAGE_EXTRA_ITEMS[stage][cat]) || [];
-  // 关键：先固定原始序号再过滤。若 filter 后才编序号，排除项会让后续 id 左移，
-  // 老用户数据里 id_0 指向的物品会与新种子含义错位，migrate 的 exists 判定失效。
-  const combined = baseAll
-    .map((it, i) => ({ it, idx: i }))
-    .filter(({ it }) => excl.indexOf(it.name) === -1)
-    .concat(extra.map((it, j) => ({ it, idx: baseAll.length + j })));
-  return combined.map(({ it, idx }) => ({
+  const catDef = content.EIGHT_CATEGORIES.find((c) => c.key === cat);
+  const baseLen = catDef ? catDef.names.length : 0;
+  const stages = content.ITEM_STAGES[cat] || [];
+  const out = [];
+
+  // 基础 172 件：按 ITEM_STAGES 过滤，保留原始下标
+  (SEED_ITEMS[cat] || []).forEach((it, i) => {
+    if (!content.fitsStage(stages[i], stage)) return;
+    out.push({ it, idx: i });
+  });
+  // 学段专属物品：从基础长度之后编排序号
+  (content.STAGE_ONLY_ITEMS[cat] || []).forEach((it, j) => {
+    if (!content.fitsStage(it.stages, stage)) return;
+    out.push({ it: { name: it.name, must: it.must }, idx: baseLen + j });
+  });
+
+  return out.map(({ it, idx }) => ({
     id: 's_' + stage + '_' + cat + '_' + idx,
     name: it.name,
     must: !!it.must,
@@ -170,41 +126,46 @@ function buildSeed() {
       lists[stage][cat] = seedItems(stage, cat);
     });
   });
-  // 新用户种子已按 STAGE_EXCLUDE 过滤，直接带迁移标记，避免多一次空跑写盘
-  return { stage: 'college', stageExcludeV1: true, lists };
+  // 新用户种子已按学段标签过滤，直接带迁移标记，避免多一次空跑写盘
+  return { stage: 'college', stageExcludeV1: true, stageTagsV2: true, lists };
 }
 
 // 老版本数据迁移（有变更返回 true，由 read() 决定回写）：
 // ① item.done:Boolean → item.status（true → 2 已装包）
 // ② 种子增量补全：缺整个分类（如老数据的军训）全量补种；已有分类只追加
 //    「序号 ≥ LEGACY_SEED_COUNTS」的新种子——用户删过的旧种子不会复活。
-// ③ 一次性学段清单清理（stageExcludeV1）：剔除老用户清单里不适合该学段的
-//    种子物品（如小学的笔记本电脑、军训腰带）。带版本标记，只跑一次；
-//    只删种子项（s_ 前缀），用户自定义的同名物品（c_ 前缀）永远保留。
-//    取舍：会丢失这些物品的勾选状态——换取「分学段」卖点对老用户也成立。
+// ③ 一次性学段清单重建（stageTagsV2）：用新的学段标签单源重建老用户清单。
+//    逐学段逐分类算出「该学段允许的名字集合」，删除不在集合里的种子项
+//    （s_ 前缀），保留自定义物品（c_ 前缀）与仍在集合内的种子勾选状态。
+//    带版本标记只跑一次；旧标记 stageExcludeV1 的数据也会触发本次重建。
+//    取舍：会丢失被删物品的勾选状态——换取「分学段」卖点对老用户也成立。
 function migrate(state) {
   let touched = false;
 
-  // ③ 一次性学段清理：只执行一次，执行后打标记永久跳过
-  if (!state.stageExcludeV1) {
+  // ③ 一次性学段重建：只执行一次，执行后打标记永久跳过
+  if (!state.stageTagsV2) {
     STAGE_KEYS.forEach((stage) => {
       const list = state.lists[stage];
       if (!list) return;
-      const exclude = STAGE_EXCLUDE[stage] || {};
       CAT_KEYS.forEach((cat) => {
-        const names = exclude[cat];
         const arr = list[cat];
-        if (!names || !names.length || !arr) return;
-        const kept = arr.filter((it) =>
-          !((typeof it.id === 'string' && it.id.indexOf('s_') === 0) && names.indexOf(it.name) !== -1)
-        );
+        if (!arr) return;
+        const allowed = {};
+        content.getStageItems(stage, cat).forEach((it) => { allowed[it.name] = true; });
+        const kept = arr.filter((it) => {
+          // 非种子项（用户自定义 c_ 等）永远保留
+          if (!(typeof it.id === 'string' && it.id.indexOf('s_') === 0)) return true;
+          // 种子项：老物品名先按别名还原到竞品新名再判断，避免老数据被误删
+          const canonical = LEGACY_NAME_ALIASES[it.name] || it.name;
+          return allowed[canonical] === true;
+        });
         if (kept.length !== arr.length) {
-          list[cat] = kept; // 只删种子项，自定义同名物品（c_ 前缀）保留
+          list[cat] = kept;
           touched = true;
         }
       });
     });
-    state.stageExcludeV1 = true;
+    state.stageTagsV2 = true;
     touched = true;
   }
 

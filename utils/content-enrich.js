@@ -118,6 +118,47 @@ const EIGHT_CATEGORIES = [
   }
 ];
 
+// ===== 学段区分单源（2026-11-22）=====
+// 每件物品标注适用学段：P=小学 M=初中 H=高中 C=大学。
+// ITEM_STAGES[cat][i] 与 EIGHT_CATEGORIES 中同名分类的 names[i] 一一对应；
+// 值为含适用学段字母的串（如 "PMHC"=全学段、"HC"=高中起、"C"=大学专属）。
+// 语义为「向上兼容」：低年级物品高年级也带，高年级专属低年级不出现。
+// 172 件基础物品均含 C（大学是全集基准，件数恒定 172）。
+const ITEM_STAGES = {"id":["C","C","C","HC","C","C","C","HC","HC","C","HC","PMHC","C","C","C"],"bed":["MHC","MHC","MHC","MHC","HC","MHC","HC","MHC","PMHC","HC","C","HC","MHC","HC","PMHC","C","MHC","MHC","HC","MHC","HC","HC","HC","MHC","PMHC","HC","HC","MHC","MHC","C","MHC","PMHC","HC"],"shirt":["PMHC","PMHC","MHC","PMHC","PMHC","PMHC","HC","PMHC","PMHC","MHC","PMHC","MHC","C","C","HC","HC","C","MHC","HC"],"soap":["PMHC","PMHC","HC","PMHC","HC","PMHC","MHC","HC","MHC","MHC","MHC","MHC","PMHC","MHC","HC","HC","MHC","HC","PMHC","PMHC","HC","HC","HC","C","C","HC","C","HC","HC","C","C","C","C","C","C","C","C","C","C","C","C","C","C","C","C","C"],"book":["PMHC","PMHC","PMHC","HC","MHC","PMHC","HC","HC","MHC","PMHC","HC","C","HC"],"laptop":["HC","HC","HC","HC","HC","C","C","C","C","MHC","MHC","C","C","HC"],"med":["C","PMHC","PMHC","PMHC","PMHC","PMHC","PMHC","MHC","PMHC","PMHC","MHC","HC","PMHC","HC","HC","PMHC"],"mil":["HC","MHC","MHC","MHC","MHC","MHC","MHC","MHC","MHC","HC","HC","MHC","HC","HC","HC","MHC"]};
+
+// 学段专属物品：只在部分学段出现（不含大学），与基础 172 件分开维护。
+// 大学件数恒为 172；高中 137 / 初中 82 / 小学 45 由上面标签 + 这里共同得出。
+const STAGE_ONLY_ITEMS = {"id":[{"name":"学籍档案","stages":"H","must":true},{"name":"学生卡","stages":"M","must":true},{"name":"姓名贴 / 姓名章","stages":"P","must":true}],"bed":[{"name":"雨衣","stages":"PMH","must":false},{"name":"儿童保温杯","stages":"P","must":true},{"name":"小雨伞（儿童款）","stages":"P","must":false}],"shirt":[{"name":"校服 ×2","stages":"PMH","must":true}],"soap":[],"book":[{"name":"错题本 ×2","stages":"H","must":true},{"name":"高考真题卷","stages":"H","must":false},{"name":"充电台灯","stages":"H","must":true},{"name":"计时器","stages":"H","must":false},{"name":"练习册","stages":"M","must":true},{"name":"字帖","stages":"PM","must":false},{"name":"书包（轻便款）","stages":"PM","must":false},{"name":"铅笔套装","stages":"P","must":true},{"name":"橡皮 + 直尺","stages":"P","must":true},{"name":"拼音练习本","stages":"P","must":false}],"laptop":[{"name":"学习平板（选带）","stages":"H","must":false}],"med":[{"name":"咖啡 / 提神饮品","stages":"H","must":false}],"mil":[]};
+
+// 学段字母 → 展示名
+const STAGE_LABELS = { P: '小学', M: '初中', H: '高中', C: '大学' };
+
+// 完整学段名 → 字母（store 传 college/high/middle/primary，标签串用字母）
+const STAGE_CODE = { primary: 'P', middle: 'M', high: 'H', college: 'C', P: 'P', M: 'M', H: 'H', C: 'C' };
+function stageCode(stage) { return STAGE_CODE[stage] || stage; }
+
+// 某物品是否适用于某学段（stage 可传字母或完整学段名）
+function fitsStage(stages, stage) {
+  return (stages || '').indexOf(stageCode(stage)) !== -1;
+}
+
+// 某学段某分类应生成的种子物品 [{name, must}]，顺序：基础命中项（按 names 序） → 专属命中项。
+// store.seedItems 据此生成并编 id；这是「学段区分」的唯一下游入口。
+function getStageItems(stage, cat) {
+  const catDef = EIGHT_CATEGORIES.find((c) => c.key === cat);
+  const out = [];
+  if (catDef) {
+    const stages = ITEM_STAGES[cat] || [];
+    catDef.names.forEach((name, i) => {
+      if (fitsStage(stages[i], stage)) out.push({ name, must: i < catDef.must });
+    });
+  }
+  (STAGE_ONLY_ITEMS[cat] || []).forEach((it) => {
+    if (fitsStage(it.stages, stage)) out.push({ name: it.name, must: !!it.must });
+  });
+  return out;
+}
+
 // 分类说明卡：8 类，subtitle 一句行动指引，note 里点出类内小项（方案稿的小项进 UI）
 const CAT_ADVICE = {
   id: { label: '证件材料', subtitle: '原件、复印件和电子备份分开放', note: '分身份原件 / 复印件与照片 / 档案与关系 / 资助与迁移四组整理；学校要求可能不同，出发前对照录取通知书再核对一次。' },
@@ -470,7 +511,25 @@ function stats() {
   };
 }
 
+// 各学段件数（单源派生，供测试/展示核对）
+function stageStats() {
+  const out = {};
+  Object.keys(STAGE_LABELS).forEach((stage) => {
+    let total = 0;
+    const perCat = {};
+    EIGHT_CATEGORIES.forEach((c) => {
+      const n = getStageItems(stage, c.key).length;
+      perCat[c.key] = n;
+      total += n;
+    });
+    out[stage] = { label: STAGE_LABELS[stage], total, perCat };
+  });
+  return out;
+}
+
 module.exports = {
   CAT_ADVICE, EIGHT_CATEGORIES, TIPS, NEW8_TIPS, SEED_TIPS, RICH_CATEGORIES,
-  getCatAdvice, getTip, getRichCategories, getEightCategories, stats
+  ITEM_STAGES, STAGE_ONLY_ITEMS, STAGE_LABELS,
+  getCatAdvice, getTip, getRichCategories, getEightCategories,
+  fitsStage, getStageItems, stageStats, stats
 };

@@ -60,6 +60,36 @@ function run() {
   assert('单件提醒文案正确（身份证原件）', ce.getTip('身份证原件').indexOf('复印件') !== -1, ce.getTip('身份证原件'));
   assert('到校买类提醒（多孔插排合规）', ce.getTip('多孔插排').indexOf('合规') !== -1, ce.getTip('多孔插排'));
 
+  // ===== ①-b 学段区分单源 =====
+  const ss = ce.stageStats();
+  assert('学段统计 4 个', Object.keys(ss).length === 4, Object.keys(ss));
+  assert('大学 172 / 高中 137 / 初中 82 / 小学 45',
+    ss.C.total === 172 && ss.H.total === 137 && ss.M.total === 82 && ss.P.total === 45,
+    [ss.C.total, ss.H.total, ss.M.total, ss.P.total].join('/'));
+  assert('四学段件数递增（低年级少）',
+    ss.P.total < ss.M.total && ss.M.total < ss.H.total && ss.H.total < ss.C.total);
+  // ITEM_STAGES 与 names 等长（单源对齐）
+  assert('学段标签与八类 names 等长',
+    e8.every((c) => (ce.ITEM_STAGES[c.key] || []).length === c.names.length));
+  // 基础 172 件均含大学标签（大学是全集基准，件数恒定）
+  assert('基础物品全部适用大学',
+    e8.every((c) => ce.ITEM_STAGES[c.key].every((s) => s.indexOf('C') !== -1)));
+  // 学段专属物品不含大学标签
+  assert('专属物品均不含大学',
+    Object.keys(ce.STAGE_ONLY_ITEMS).every((k) =>
+      ce.STAGE_ONLY_ITEMS[k].every((it) => it.stages.indexOf('C') === -1)));
+  // 向上兼容：全学段标签的物品，四个学段都命中
+  assert('fitsStage 兼容完整学段名与字母',
+    ce.fitsStage('PMHC', 'primary') && ce.fitsStage('PMHC', 'P')
+    && !ce.fitsStage('C', 'primary') && !ce.fitsStage('C', 'P'));
+  // 专属物品按学段出现
+  assert('姓名贴只进小学', ce.getStageItems('primary', 'id').some((x) => x.name === '姓名贴 / 姓名章')
+    && !ce.getStageItems('college', 'id').some((x) => x.name === '姓名贴 / 姓名章'));
+  assert('错题本只进高中', ce.getStageItems('high', 'book').some((x) => x.name === '错题本 ×2')
+    && !ce.getStageItems('middle', 'book').some((x) => x.name === '错题本 ×2'));
+  assert('小学无数码无军训',
+    ce.getStageItems('primary', 'laptop').length === 0 && ce.getStageItems('primary', 'mil').length === 0);
+
   // ===== ② decision 决策 API =====
   const state = makeState();
   const env = makeEnv(state);

@@ -288,12 +288,18 @@ function run() {
     assert('小学有姓名贴', primary.indexOf('姓名贴 / 姓名章') !== -1);
     assert('小学已排除笔记本电脑', primary.indexOf('笔记本电脑') === -1);
     assert('小学已排除手机与军训鞋垫', primary.indexOf('手机') === -1 && primary.indexOf('军训鞋垫') === -1);
-    assert('共用物品在各学段保留', high.indexOf('身份证原件') !== -1 && primary.indexOf('身份证原件') !== -1);
+    // 身份证原件是大学专属（异地报到），低学段不带；共同物品是「少量现金」这类全学段项
+    assert('身份证原件为大学专属', college.indexOf('身份证原件') !== -1
+      && high.indexOf('身份证原件') === -1 && primary.indexOf('身份证原件') === -1);
+    assert('全学段共用物品保留', primary.indexOf('少量现金') !== -1 && college.indexOf('少量现金') !== -1);
 
-    // id 稳定性：同一分类同一序号在不同学段指向同名物品（迁移锚点不能错位）
-    const c0 = store.getChecklist('college', 'id')[0];
-    const p0 = store.getChecklist('primary', 'id')[0];
-    assert('学段间 id 序号锚点名称一致', c0.name === p0.name && c0.name === '身份证原件');
+    // id 稳定性：同一物品在各学段 id 后缀（基础原始序号）保持一致，不因学段过滤而左移
+    const cCash = store.getChecklist('college', 'id').find((x) => x.name === '少量现金');
+    const pCash = store.getChecklist('primary', 'id').find((x) => x.name === '少量现金');
+    // id 含学段前缀（college/primary），只需末尾序号一致即锚点稳定
+    const suffix = (x) => x && x.id.split('_').pop();
+    assert('学段间同物品 id 锚点一致', cCash && pCash && suffix(cCash) === suffix(pCash),
+      cCash && pCash ? cCash.id + ' / ' + pCash.id : '缺失');
   }
 
   // ---------- 11. 核心 20 件快速模式 ----------
@@ -344,7 +350,7 @@ function run() {
     assert('迁移后序号锚点不变（老数据保留原名）', idList[0].name === '身份证');
   }
 
-  // ---------- 13. 一次性学段清理（stageExcludeV1）----------
+  // ---------- 13. 一次性学段重建（stageTagsV2）----------
   {
     const oldState = {
       stage: 'primary',
@@ -370,14 +376,16 @@ function run() {
 
     const lap = store.getChecklist('primary', 'laptop');
     const mil = store.getChecklist('primary', 'mil');
-    assert('清理: 小学种子笔记本电脑已删', !lap.some((x) => x.id === 's_primary_laptop_0'));
-    assert('清理: 小学种子多孔插排已删', !lap.some((x) => x.id === 's_primary_laptop_2'));
-    assert('清理: 小学种子替换鞋垫已删', !mil.some((x) => x.id === 's_primary_mil_1'));
-    assert('清理: 非排除种子保留且勾选不变', (lap.find((x) => x.id === 's_primary_laptop_3') || {}).status === 2);
-    assert('清理: 未排除的军训物品保留', (mil.find((x) => x.id === 's_primary_mil_7') || {}).status === 1);
-    assert('清理: 用户自定义同名物品保留', (lap.find((x) => x.id === 'c_12345_1') || {}).name === '笔记本电脑');
-    assert('清理: 被删项未被增量补种回灌', !lap.some((x) => x.name === '多孔插排' && x.id.indexOf('s_') === 0));
-    assert('清理: 迁移标记已写入', base.storage.schoolprep_v1.stageExcludeV1 === true);
+    // 新模型：小学完全没有数码与军训用品（数码/军训标签均不含 P）
+    assert('重建: 小学种子笔记本电脑已删', !lap.some((x) => x.id === 's_primary_laptop_0'));
+    assert('重建: 小学种子多孔插排已删', !lap.some((x) => x.id === 's_primary_laptop_2'));
+    assert('重建: 小学种子充电宝已删', !lap.some((x) => x.id === 's_primary_laptop_3'));
+    assert('重建: 小学种子替换鞋垫已删', !mil.some((x) => x.id === 's_primary_mil_1'));
+    assert('重建: 小学种子纸巾湿巾已删（军训属 MHC，小学无）', !mil.some((x) => x.id === 's_primary_mil_7'));
+    assert('重建: 小学数码分类为空', lap.filter((x) => x.id.indexOf('s_') === 0).length === 0);
+    assert('重建: 小学军训分类为空', mil.length === 0);
+    assert('重建: 用户自定义同名物品保留', (lap.find((x) => x.id === 'c_12345_1') || {}).name === '笔记本电脑');
+    assert('重建: 迁移标记已写入', base.storage.schoolprep_v1.stageTagsV2 === true);
 
     // 幂等：标记已打后，即使 storage 里再出现同名种子项也不再清理
     base.storage.schoolprep_v1.lists.primary.laptop.push(
@@ -386,7 +394,7 @@ function run() {
     store.clearCache();
     const env2 = makeEnv(base);
     const store2 = env2.load('utils/store.js');
-    assert('清理幂等: 二次迁移不重复删除',
+    assert('重建幂等: 二次迁移不重复删除',
       store2.getChecklist('primary', 'laptop').some((x) => x.id === 's_primary_laptop_0'));
   }
 }
