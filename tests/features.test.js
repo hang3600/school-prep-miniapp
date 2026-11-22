@@ -31,18 +31,23 @@ function run() {
     home.refresh();
     assert('30 天 → 从容期', home.data.countdownText === '距开学还有 30 天' && home.data.advice.indexOf('从容期') !== -1,
       home.data.advice);
+    assert('30 天 → 时间带第 0 段高亮 + 大数字 30', home.data.activePhase === 0 && home.data.daysLeft === 30,
+      'activePhase=' + home.data.activePhase + ' daysLeft=' + home.data.daysLeft);
 
     store.setSchoolDate(fmt(10));
     home.refresh();
     assert('10 天 → 采购期', home.data.advice.indexOf('采购期') !== -1, home.data.advice);
+    assert('10 天 → 时间带第 1 段高亮', home.data.activePhase === 1, home.data.activePhase);
 
     store.setSchoolDate(fmt(5));
     home.refresh();
     assert('5 天 → 打包期', home.data.advice.indexOf('打包期') !== -1, home.data.advice);
+    assert('5 天 → 时间带第 2 段高亮', home.data.activePhase === 2, home.data.activePhase);
 
     store.setSchoolDate(fmt(1));
     home.refresh();
     assert('1 天 → 出发前', home.data.advice.indexOf('出发前') !== -1, home.data.advice);
+    assert('1 天 → 时间带第 3 段高亮', home.data.activePhase === 3 && home.data.daysLeft === 1, home.data.activePhase);
 
     store.setSchoolDate(fmt(0));
     home.refresh();

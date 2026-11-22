@@ -40,6 +40,15 @@ const COUNTDOWN_ADVICE = [
   { min: -Infinity, text: '已开学：缺什么照着清单补齐就好。' }
 ];
 
+// 时间带四段：与 COUNTDOWN_ADVICE 的分段口径一致（22+/8+/3+/0）
+// min 为该段起始剩余天数，max 仅供判定；idx 用于 WXML 高亮当前段
+const PHASE_BANDS = [
+  { key: 'calm', label: '从容期', min: 22 },
+  { key: 'buy', label: '采购期', min: 8 },
+  { key: 'pack', label: '打包期', min: 3 },
+  { key: 'go', label: '出发', min: 0 }
+];
+
 // 首页清单预览：取前若干「必带」物品（跨分类），不足补「选带」，让用户首屏就看到真实清单内容
 function buildPreview(stage) {
   const items = [];
@@ -86,6 +95,11 @@ Page({
     countdownText: '设置开学日期',
     advice: '设置后按剩余天数给你分阶段准备建议',
     cdEdit: '去设置',
+    daysLeft: null,
+    schoolDateText: '',
+    // 时间带：四段等宽，当前段按下表高亮（由 refreshCountdown 计算）
+    phaseBands: PHASE_BANDS,
+    activePhase: -1,
     // 日期选择范围（D2 修复：end 随当前年份动态 +2，不再硬编码 2026–2027 导致跨年失效）
     dateStart: '2020-01-01',
     dateEnd: '',
@@ -249,27 +263,48 @@ Page({
     this.refreshCountdown();
   },
 
-  // 开学倒计时：剩余天数 + 分阶段建议（时区安全：手动解析 YYYY-MM-DD）
+  // 开学倒计时：剩余天数 + 分阶段建议 + 时间带当前段（时区安全：手动解析 YYYY-MM-DD）
   refreshCountdown() {
     const diff = store.daysUntilSchool();
     let countdownText;
     let advice;
+    let activePhase = -1;
+    let schoolDateText = '';
     if (diff === null) {
       countdownText = '设置开学日期';
       advice = '设置后按剩余天数给你分阶段准备建议';
-    } else if (diff > 0) {
-      countdownText = '距开学还有 ' + diff + ' 天';
-      advice = COUNTDOWN_ADVICE.find((a) => diff >= a.min).text;
-    } else if (diff === 0) {
-      countdownText = '今天开学';
-      advice = COUNTDOWN_ADVICE[4].text;
     } else {
-      countdownText = '已开学 ' + -diff + ' 天';
-      advice = COUNTDOWN_ADVICE[5].text;
+      if (diff > 0) {
+        countdownText = '距开学还有 ' + diff + ' 天';
+        advice = COUNTDOWN_ADVICE.find((a) => diff >= a.min).text;
+        // 当前段：从高到低找第一个满足 diff >= min 的段（22→8→3→0）
+        activePhase = PHASE_BANDS.findIndex((b) => diff >= b.min);
+      } else if (diff === 0) {
+        countdownText = '今天开学';
+        advice = COUNTDOWN_ADVICE[4].text;
+        activePhase = 3;
+      } else {
+        countdownText = '已开学 ' + -diff + ' 天';
+        advice = COUNTDOWN_ADVICE[5].text;
+        activePhase = 3;
+      }
+      // 日历日期文本：用 store 单源接口读回用户设定的开学日期，展示「9 月 1 日 · 星期一」
+      try {
+        const raw = store.getSchoolDate();
+        if (raw) {
+          const parts = raw.split('-');
+          const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+          const weeks = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+          schoolDateText = Number(parts[1]) + ' 月 ' + Number(parts[2]) + ' 日 · ' + weeks[d.getDay()];
+        }
+      } catch (e) {}
     }
     this.setData({
       countdownText,
       advice,
+      activePhase,
+      daysLeft: diff === null ? null : Math.abs(diff),
+      schoolDateText,
       cdEdit: diff === null ? '去设置' : '修改'
     });
   },
