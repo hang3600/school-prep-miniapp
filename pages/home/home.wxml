@@ -50,17 +50,6 @@
         <text class="hero-desc" wx:else>{{stageLabel}}共 {{totalCount}} 件，{{heroDesc}}</text>
       </view>
 
-      <!-- 强 CTA：首页承接主入口，上移到倒计时 Hero 正下方——主任务「开始整理」首屏即可达（动线修复，其余块不动） -->
-      <view class="cta-wrap">
-        <view class="cta-btn" hover-class="cta-press" hover-stay-time="60" bindtap="onStartTap">
-          <view class="cta-main">
-            <text class="cta-title">{{ctaLabel}}</text>
-            <text class="cta-sub">{{stageLabel}} · 已按必带/选带分好</text>
-          </view>
-          <text class="cta-arrow">›</text>
-        </view>
-      </view>
-
       <!-- 清单预览：首页直接展示真实物品，证明「替你想到了」（showPreview 可隐藏，便于 A/B 对比）
            2026-11-22：5 行竖排 → 横向胶囊，高度 ~400rpx 压到 ~130rpx，
            让学段切换 / 分类宫格 / CTA 进入首屏；物品名、必带选带、已勾状态都保留 -->
@@ -78,32 +67,30 @@
         >{{item.label}}</view>
       </view>
 
-      <!-- 清单范围切换：核心 20 件快速模式 / 完整清单 -->
-      <view class="scope-row">
-        <text class="scope-label">清单范围</text>
-        <view class="scope-seg">
-          <view
-            class="scope-pill {{coreMode ? 'active' : ''}}"
-            hover-class="hv-press"
-            hover-stay-time="60"
-            data-core="true"
-            bindtap="onCoreModeTap"
-          >核心 20 件</view>
-          <view
-            class="scope-pill {{!coreMode ? 'active' : ''}}"
-            hover-class="hv-press"
-            hover-stay-time="60"
-            data-core="false"
-            bindtap="onCoreModeTap"
-          >完整清单</view>
-        </view>
-      </view>
-
-      <!-- 清单抢先看：紧跟在学段/范围设置之后——先定学段，再看对应清单（2026-11-22 动线修复） -->
+      <!-- 清单抢先看：紧跟在学段之后——先定学段再看对应清单。
+           清单范围切换并入卡片头部：切了立刻看到件数/物品变化；删掉与分类下方 CTA 重复的「去整理」 -->
       <view class="preview-card" wx:if="{{showPreview}}">
         <view class="preview-head">
-          <text class="preview-title">清单抢先看 · {{stageLabel}} · {{previewCount}} 件</text>
-          <text class="preview-more" hover-class="hv-press" hover-stay-time="60" bindtap="onStartTap">去整理 ›</text>
+          <view class="preview-heading">
+            <text class="preview-title">清单抢先看 · {{stageLabel}} · </text>
+            <text class="preview-count num">{{previewCount}} 件</text>
+          </view>
+          <view class="scope-seg scope-seg-inline">
+            <view
+              class="scope-pill {{coreMode ? 'active' : ''}}"
+              hover-class="hv-press"
+              hover-stay-time="60"
+              data-core="true"
+              bindtap="onCoreModeTap"
+            >核心</view>
+            <view
+              class="scope-pill {{!coreMode ? 'active' : ''}}"
+              hover-class="hv-press"
+              hover-stay-time="60"
+              data-core="false"
+              bindtap="onCoreModeTap"
+            >完整</view>
+          </view>
         </view>
         <scroll-view class="preview-scroll" scroll-x>
           <view
@@ -141,6 +128,17 @@
           </view>
           <text class="grid-label">{{item.label}}</text>
           <text class="grid-count num">{{item.count}}</text>
+        </view>
+      </view>
+
+      <!-- 强 CTA：看完倒计时 / 学段 / 分类建立认知后，按钮收口到行动——放在分类宫格正下方 -->
+      <view class="cta-wrap">
+        <view class="cta-btn" hover-class="cta-press" hover-stay-time="60" bindtap="onStartTap">
+          <view class="cta-main">
+            <text class="cta-title">{{ctaLabel}}</text>
+            <text class="cta-sub">{{stageLabel}} · 已按必带/选带分好</text>
+          </view>
+          <text class="cta-arrow">›</text>
         </view>
       </view>
 
