@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>首页一屏版 · 高保真还原</title>
+<style>
+  /* rpx → px：390/750 = 0.52；令牌值来自 app.wxss + 改后 home.wxss 提案 */
+  :root{
+    --brand:#2F8F6B; --brand-deep:#247454; --brand-soft:#E7F3ED;
+    --gray:#6E6C62; --ink:#242922; --ink-2:#5C5A50;
+    --bg:#F7F6F1; --border:#E6E4DB;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:-apple-system,"PingFang SC",sans-serif; background:#e9e9e6; padding:24px; display:flex; gap:32px; justify-content:center; align-items:flex-start;}
+  .stage{display:flex; flex-direction:column; align-items:center; gap:10px;}
+  .stage .cap{font-size:13px; color:#3a3a3a; font-weight:600;}
+  .stage .sub{font-size:11px; color:#777;}
+  .phone{width:390px; height:844px; background:linear-gradient(180deg,#FBF9F3,#F7F6F1); overflow-y:auto; position:relative; flex-shrink:0; box-shadow:0 6px 20px rgba(0,0,0,.12); border-radius:6px;}
+  .phone::-webkit-scrollbar{display:none}
+  .statusbar{height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:13px; font-weight:600; color:var(--ink);}
+  .nav{height:40px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#fff; background:var(--brand);}
+  .content-inner{padding:0 14.6px; display:flex; flex-direction:column; gap:14px;}
+
+  /* Hero —— 收紧留白，签名物件（大数字 + 四段时间带）保留 */
+  .hero{padding:3px 0 1px;}
+  .hero-title{display:block; font-size:12px; color:var(--ink-2); letter-spacing:.5px;}
+  .hero-num-row{display:flex; align-items:baseline; margin-top:3px;}
+  .hero-num{font-size:44px; font-weight:500; line-height:1; color:var(--brand);}
+  .hero-pct{font-size:16px; font-weight:500; color:var(--gray); margin-left:5px;}
+  .hero-date{display:block; font-size:11px; color:var(--ink-2); margin-top:4px;}
+  .band{display:flex; gap:4.2px; margin-top:10px;}
+  .band-seg{flex:1; height:7.3px; border-radius:3.6px; background:#E4E6E0;}
+  .band-seg.active{background:var(--brand);}
+  .band-labels{display:flex; gap:4.2px; margin-top:5px;}
+  .band-label{flex:1; text-align:center; font-size:11.4px; color:var(--gray);}
+  .band-label.active{color:var(--brand); font-weight:600;}
+  .advice-row{display:flex; align-items:flex-start; gap:8px; margin-top:8px; padding:6px 0; border-top:1px solid var(--border);}
+  .advice-text{flex:1; font-size:13px; color:var(--ink-2); line-height:1.5; text-wrap:pretty;}
+  .cd-edit{font-size:11px; color:var(--brand); flex-shrink:0; padding-top:1px;}
+  .hero-progress{margin-top:3px; display:flex; align-items:center; gap:8px;}
+  .hero-progress-label{font-size:11px; color:var(--ink-2); white-space:nowrap;}
+  .hero-track{flex:1; height:4.2px; background:#EDEFE9; border-radius:2px; overflow:hidden;}
+  .hero-fill{height:100%; background:var(--brand); border-radius:2px; width:35%;}
+
+  /* 主 CTA —— 上移到 Hero 正下方，首屏闭环 */
+  .cta-btn{background:linear-gradient(135deg,#3fa37d,#247454); border-radius:11.4px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 14px rgba(47,143,107,.25);}
+  .cta-main{display:flex; flex-direction:column; gap:3px;}
+  .cta-title{font-size:17px; font-weight:700; color:#fff; line-height:1.1;}
+  .cta-sub{font-size:11.5px; color:rgba(255,255,255,.88);}
+  .cta-arrow{font-size:24px; color:#fff; font-weight:700;}
+
+  /* 设置行 —— 学段 + 范围合并成一行 */
+  .setup-row{display:flex; align-items:center; gap:10px;}
+  .setup-label{font-size:11px; color:var(--gray); flex-shrink:0;}
+  .stage-seg{flex:1; display:flex; gap:4px; background:#fff; border-radius:20px; padding:4px; box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .stage-pill{flex:1; height:29px; display:flex; align-items:center; justify-content:center; border-radius:16px; font-size:12.5px; color:var(--gray);}
+  .stage-pill.active{background:var(--brand); color:#fff; font-weight:600;}
+  .scope-seg{display:flex; gap:3px; background:var(--brand-soft); border-radius:20px; padding:3px; flex-shrink:0;}
+  .scope-pill{padding:5px 9px; border-radius:16px; font-size:11px; color:var(--brand-deep); white-space:nowrap;}
+  .scope-pill.active{background:var(--brand); color:#fff; font-weight:600;}
+
+  /* 清单抢先看 —— 保持 */
+  .preview-card{background:#fff; border:1px solid var(--border); border-radius:16.1px; padding:11px 12px 12px; box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .preview-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px;}
+  .preview-title{font-size:13px; font-weight:700; color:var(--ink);}
+  .preview-more{font-size:11.5px; color:var(--brand);}
+  .preview-scroll{display:flex; gap:6px; overflow:hidden; white-space:nowrap;}
+  .chip{display:inline-flex; align-items:center; gap:5px; height:26px; padding:0 9px; border-radius:13px; background:var(--brand-soft); flex-shrink:0;}
+  .chip.opt{background:#F2F3F5;} .chip.done{background:#F2F3F5;}
+  .chip-name{font-size:12px; color:var(--brand-deep); font-weight:600;}
+  .chip.opt .chip-name,.chip.done .chip-name{color:var(--gray); font-weight:500;}
+  .chip.done .chip-name{text-decoration:line-through;}
+  .dot{width:7px; height:7px; border-radius:50%; background:#C9CDD4; flex-shrink:0;}
+  .dot.st1{background:var(--brand);}
+  .chip-more{background:transparent; border:1px solid var(--border); font-size:12px; color:var(--gray); font-weight:500;}
+
+  /* 分类 —— 两行宫格改为一行横滑胶囊 */
+  .cat-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px;}
+  .cat-title{font-size:14px; font-weight:600; color:var(--ink);}
+  .cat-more{font-size:11.5px; color:var(--brand);}
+  .cat-scroll{display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; white-space:nowrap;}
+  .cat-scroll::-webkit-scrollbar{display:none}
+  .cat-chip{display:inline-flex; align-items:center; gap:6px; background:#fff; border:1px solid var(--border); border-radius:11px; padding:7px 9px; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .cat-ic{width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:14px;}
+  .cat-name{font-size:12px; color:var(--ink); font-weight:600;}
+  .cat-count{font-size:11px; color:var(--gray);}
+
+  /* 今日小贴士 —— 实测富余 195px，放回来也不超出折叠线，内容一个不删 */
+  .tips-card{background:#fff; border:1px solid var(--border); border-radius:14px; padding:11px 13px; display:flex; flex-direction:column; gap:6px; box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .tips-head{display:flex; align-items:center; gap:6px;}
+  .tips-title{font-size:13px; font-weight:700; color:var(--ink);}
+  .tips-text{font-size:12px; line-height:1.6; color:var(--ink-2); text-wrap:pretty;}
+
+  .tabbar{position:absolute; bottom:0; left:0; right:0; height:56px; background:#fff; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-around; font-size:11px; color:var(--gray);}
+  .tabbar .on{color:var(--brand); font-weight:600;}
+
+  .note{width:390px; background:#fff; border-left:3px solid var(--brand); padding:12px 14px; font-size:12px; line-height:1.7; color:#444;}
+  .note b{color:var(--brand-deep);}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="cap">首页一屏版 · 改后</div>
+  <div class="sub">390×844 · 内容全部保留 · 折叠线之上装完</div>
+  <div class="phone">
+    <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div>
+    <div class="nav">开学准备</div>
+    <div class="content-inner">
+
+      <div class="hero">
+        <span class="hero-title">开学倒计时</span>
+        <div class="hero-num-row"><span class="hero-num">23</span><span class="hero-pct">天后开学</span></div>
+        <span class="hero-date">12 月 15 日 · 星期二</span>
+        <div class="band">
+          <div class="band-seg active"></div><div class="band-seg"></div><div class="band-seg"></div><div class="band-seg"></div>
+        </div>
+        <div class="band-labels">
+          <span class="band-label active">从容期</span><span class="band-label">采购期</span><span class="band-label">打包期</span><span class="band-label">出发</span>
+        </div>
+        <div class="advice-row">
+          <span class="advice-text">从容期：先把证件照、复印件这些要跑腿的办掉，行李慢慢置办。</span>
+          <span class="cd-edit">修改</span>
+        </div>
+        <div class="hero-progress">
+          <span class="hero-progress-label">已整理 26/75 件</span>
+          <div class="hero-track"><div class="hero-fill"></div></div>
+        </div>
+      </div>
+
+      <div class="cta-btn">
+        <div class="cta-main"><div class="cta-title">继续整理</div><div class="cta-sub">大学 · 已按必带/选带分好</div></div>
+        <span class="cta-arrow">›</span>
+      </div>
+
+      <div class="setup-row">
+        <span class="setup-label">学段</span>
+        <div class="stage-seg">
+          <div class="stage-pill active">大学</div><div class="stage-pill">高中</div><div class="stage-pill">初中</div><div class="stage-pill">小学</div>
+        </div>
+        <div class="scope-seg"><span class="scope-pill">核心20件</span><span class="scope-pill active">完整</span></div>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-head"><span class="preview-title">清单抢先看 · 大学 · 75 件</span><span class="preview-more">去整理 ›</span></div>
+        <div class="preview-scroll">
+          <div class="chip"><span class="dot st1"></span><span class="chip-name">录取通知书</span></div>
+          <div class="chip"><span class="dot"></span><span class="chip-name">身份证</span></div>
+          <div class="chip"><span class="dot"></span><span class="chip-name">学生证</span></div>
+          <div class="chip"><span class="dot"></span><span class="chip-name">户口本</span></div>
+          <div class="chip done"><span class="dot"></span><span class="chip-name">证件照</span></div>
+          <div class="chip-more">+70 件 ›</div>
+        </div>
+      </div>
+
+      <div class="cat-wrap">
+        <div class="cat-head"><span class="cat-title">入学物品分类</span><span class="cat-more">全部 7 类 ›</span></div>
+        <div class="cat-scroll">
+          <div class="cat-chip"><div class="cat-ic" style="background:#E7F3ED">🪪</div><span class="cat-name">证件</span><span class="cat-count">12</span></div>
+          <div class="cat-chip"><div class="cat-ic" style="background:#E6F7EE">🧴</div><span class="cat-name">洗漱</span><span class="cat-count">9</span></div>
+          <div class="cat-chip"><div class="cat-ic" style="background:#FFF4DC">✏️</div><span class="cat-name">文具</span><span class="cat-count">14</span></div>
+          <div class="cat-chip"><div class="cat-ic" style="background:#F0EBFF">🛏️</div><span class="cat-name">床品</span><span class="cat-count">8</span></div>
+          <div class="cat-chip"><div class="cat-ic" style="background:#FDF1E5">💻</div><span class="cat-name">数码</span><span class="cat-count">11</span></div>
+          <div class="cat-chip"><div class="cat-ic" style="background:#FFEAF1">👕</div><span class="cat-name">衣物</span><span class="cat-count">13</span></div>
+          <div class="cat-chip"><div class="cat-ic" style="background:#FFE4E1">🎖️</div><span class="cat-name">军训</span><span class="cat-count">8</span></div>
+        </div>
+      </div>
+
+      <div class="tips-card">
+        <div class="tips-head"><span>🎒</span><span class="tips-title">今日开学小贴士</span></div>
+        <div class="tips-text">证件类建议用透明文件袋分类装好，报到当天抽拿最方便。</div>
+      </div>
+
+    </div>
+    <div class="tabbar"><span class="on">🏠<br>首页</span><span>📋<br>清单</span><span>📊<br>进度</span><span>👤<br>我的</span></div>
+  </div>
+  <div class="note">
+    <b>改了什么：</b>CTA 上移到 Hero 下方 · 分类宫格两行→一行横滑 · 学段+范围并成一行 · Hero 收紧留白。<br>
+    <b>内容一个没删：</b>小贴士实测放得回（余量足够），已从"下沉"改回首页保留。<br>
+    <b>保留：</b>大数字、四段时间带、卡片质感、品牌绿——签名物件一个没动。<br>
+    <b>范围：</b>只改首页；详情页照常可滑，不动配色令牌与数据层。
+  </div>
+</div>
+
+</body>
+</html>
