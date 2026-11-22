@@ -50,6 +50,17 @@
         <text class="hero-desc" wx:else>{{stageLabel}}共 {{totalCount}} 件，{{heroDesc}}</text>
       </view>
 
+      <!-- 强 CTA：首页承接主入口，上移到倒计时 Hero 正下方——主任务「开始整理」首屏即可达（动线修复，其余块不动） -->
+      <view class="cta-wrap">
+        <view class="cta-btn" hover-class="cta-press" hover-stay-time="60" bindtap="onStartTap">
+          <view class="cta-main">
+            <text class="cta-title">{{ctaLabel}}</text>
+            <text class="cta-sub">{{stageLabel}} · 已按必带/选带分好</text>
+          </view>
+          <text class="cta-arrow">›</text>
+        </view>
+      </view>
+
       <!-- 清单预览：首页直接展示真实物品，证明「替你想到了」（showPreview 可隐藏，便于 A/B 对比）
            2026-11-22：5 行竖排 → 横向胶囊，高度 ~400rpx 压到 ~130rpx，
            让学段切换 / 分类宫格 / CTA 进入首屏；物品名、必带选带、已勾状态都保留 -->
@@ -129,17 +140,6 @@
           </view>
           <text class="grid-label">{{item.label}}</text>
           <text class="grid-count num">{{item.count}}</text>
-        </view>
-      </view>
-
-      <!-- 强 CTA：首页承接主入口，直接进清单（置于分类宫格下方，强化「选学段→看分类→开始整理」动线） -->
-      <view class="cta-wrap">
-        <view class="cta-btn" hover-class="cta-press" hover-stay-time="60" bindtap="onStartTap">
-          <view class="cta-main">
-            <text class="cta-title">{{ctaLabel}}</text>
-            <text class="cta-sub">{{stageLabel}} · 已按必带/选带分好</text>
-          </view>
-          <text class="cta-arrow">›</text>
         </view>
       </view>
 
