@@ -50,49 +50,6 @@
         <text class="hero-desc" wx:else>{{stageLabel}}共 {{totalCount}} 件，{{heroDesc}}</text>
       </view>
 
-      <!-- 主 CTA：上移到 Hero 正下方，形成「看倒计时 → 点整理」首屏闭环（修 CTA 出屏的功能性致命伤） -->
-      <view class="cta-wrap">
-        <view class="cta-btn" hover-class="cta-press" hover-stay-time="60" bindtap="onStartTap">
-          <view class="cta-main">
-            <text class="cta-title">{{ctaLabel}}</text>
-            <text class="cta-sub">{{stageLabel}} · 已按必带/选带分好</text>
-          </view>
-          <text class="cta-arrow">›</text>
-        </view>
-      </view>
-
-      <!-- 学段 + 范围：合并成一行（去掉两处 section-title 小标题，省一整行高度） -->
-      <view class="setup-row">
-        <text class="setup-label">学段</text>
-        <view class="stage-seg">
-          <view
-            wx:for="{{stages}}"
-            wx:key="key"
-            class="stage-pill {{stage === item.key ? 'active' : ''}}"
-            hover-class="hv-press"
-            hover-stay-time="60"
-            data-key="{{item.key}}"
-            bindtap="onStageTap"
-          >{{item.label}}</view>
-        </view>
-        <view class="scope-seg">
-          <view
-            class="scope-pill {{coreMode ? 'active' : ''}}"
-            hover-class="hv-press"
-            hover-stay-time="60"
-            data-core="true"
-            bindtap="onCoreModeTap"
-          >核心20件</view>
-          <view
-            class="scope-pill {{!coreMode ? 'active' : ''}}"
-            hover-class="hv-press"
-            hover-stay-time="60"
-            data-core="false"
-            bindtap="onCoreModeTap"
-          >完整</view>
-        </view>
-      </view>
-
       <!-- 清单预览：首页直接展示真实物品，证明「替你想到了」（showPreview 可隐藏，便于 A/B 对比）
            2026-11-22：5 行竖排 → 横向胶囊，高度 ~400rpx 压到 ~130rpx，
            让学段切换 / 分类宫格 / CTA 进入首屏；物品名、必带选带、已勾状态都保留 -->
@@ -120,30 +77,70 @@
         </scroll-view>
       </view>
 
-      <!-- 分类：两行宫格 → 一行横滑胶囊（完整 7 类仍在「分类」tab，首页只做入口）
-           2026-11-22 一屏重构：省约 110rpx；数据绑定（categories/key/tint/label/count）与点击动线全部保留 -->
-      <view class="cat-wrap">
-        <view class="cat-head">
-          <text class="cat-title">入学物品分类</text>
-          <text class="cat-more" hover-class="hv-press" hover-stay-time="60" bindtap="onCategoryMore">全部 7 类 ›</text>
-        </view>
-        <scroll-view class="cat-scroll" scroll-x>
+      <!-- 学段切换（默认大学选中） -->
+      <text class="section-title">选择学段</text>
+      <view class="stage-seg">
+        <view
+          wx:for="{{stages}}"
+          wx:key="key"
+          class="stage-pill {{stage === item.key ? 'active' : ''}}"
+          hover-class="hv-press"
+          hover-stay-time="60"
+          data-key="{{item.key}}"
+          bindtap="onStageTap"
+        >{{item.label}}</view>
+      </view>
+
+      <!-- 清单范围切换：核心 20 件快速模式 / 完整清单 -->
+      <view class="scope-row">
+        <text class="scope-label">清单范围</text>
+        <view class="scope-seg">
           <view
-            wx:for="{{categories}}"
-            wx:key="key"
-            class="cat-chip"
+            class="scope-pill {{coreMode ? 'active' : ''}}"
             hover-class="hv-press"
             hover-stay-time="60"
-            data-key="{{item.key}}"
-            bindtap="onCategoryTap"
-          >
-            <view class="cat-ic" style="background:{{item.tint}}">
-              <image class="cat-ic-img" src="/images/icons/ic-cat-{{item.key}}.svg" mode="aspectFit" />
-            </view>
-            <text class="cat-name">{{item.label}}</text>
-            <text class="cat-count num">{{item.count}}</text>
+            data-core="true"
+            bindtap="onCoreModeTap"
+          >核心 20 件</view>
+          <view
+            class="scope-pill {{!coreMode ? 'active' : ''}}"
+            hover-class="hv-press"
+            hover-stay-time="60"
+            data-core="false"
+            bindtap="onCoreModeTap"
+          >完整清单</view>
+        </view>
+      </view>
+
+      <!-- 分类宫格 -->
+      <text class="section-title">入学物品分类</text>
+      <view class="grid">
+        <view
+          wx:for="{{categories}}"
+          wx:key="key"
+          class="grid-cell"
+          hover-class="hv-press"
+          hover-stay-time="60"
+          data-key="{{item.key}}"
+          bindtap="onCategoryTap"
+        >
+          <view class="grid-icon" style="background:{{item.tint}}">
+            <image class="grid-icon-img" src="/images/icons/ic-cat-{{item.key}}.svg" mode="aspectFit" />
           </view>
-        </scroll-view>
+          <text class="grid-label">{{item.label}}</text>
+          <text class="grid-count num">{{item.count}}</text>
+        </view>
+      </view>
+
+      <!-- 强 CTA：首页承接主入口，直接进清单（置于分类宫格下方，强化「选学段→看分类→开始整理」动线） -->
+      <view class="cta-wrap">
+        <view class="cta-btn" hover-class="cta-press" hover-stay-time="60" bindtap="onStartTap">
+          <view class="cta-main">
+            <text class="cta-title">{{ctaLabel}}</text>
+            <text class="cta-sub">{{stageLabel}} · 已按必带/选带分好</text>
+          </view>
+          <text class="cta-arrow">›</text>
+        </view>
       </view>
 
       <!-- 今日整理小贴士（按日期轮换，纯本地） -->
