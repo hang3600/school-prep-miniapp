@@ -64,30 +64,6 @@
       <!-- 清单预览：首页直接展示真实物品，证明「替你想到了」（showPreview 可隐藏，便于 A/B 对比）
            2026-11-22：5 行竖排 → 横向胶囊，高度 ~400rpx 压到 ~130rpx，
            让学段切换 / 分类宫格 / CTA 进入首屏；物品名、必带选带、已勾状态都保留 -->
-      <view class="preview-card" wx:if="{{showPreview}}">
-        <view class="preview-head">
-          <text class="preview-title">清单抢先看 · {{stageLabel}} · {{previewCount}} 件</text>
-          <text class="preview-more" hover-class="hv-press" hover-stay-time="60" bindtap="onStartTap">去整理 ›</text>
-        </view>
-        <scroll-view class="preview-scroll" scroll-x>
-          <view
-            wx:for="{{previewItems}}"
-            wx:key="id"
-            class="chip {{item.must ? 'must' : 'opt'}} {{item.statusClass !== 'st0' ? 'done' : ''}}"
-          >
-            <view class="dot {{item.statusClass}}"></view>
-            <text class="chip-name">{{item.name}}</text>
-          </view>
-          <view
-            wx:if="{{previewCount > previewItems.length}}"
-            class="chip chip-more"
-            hover-class="hv-press"
-            hover-stay-time="60"
-            bindtap="onStartTap"
-          >+{{previewCount - previewItems.length}} 件 ›</view>
-        </scroll-view>
-      </view>
-
       <!-- 学段切换（默认大学选中） -->
       <text class="section-title">选择学段</text>
       <view class="stage-seg">
@@ -121,6 +97,31 @@
             bindtap="onCoreModeTap"
           >完整清单</view>
         </view>
+      </view>
+
+      <!-- 清单抢先看：紧跟在学段/范围设置之后——先定学段，再看对应清单（2026-11-22 动线修复） -->
+      <view class="preview-card" wx:if="{{showPreview}}">
+        <view class="preview-head">
+          <text class="preview-title">清单抢先看 · {{stageLabel}} · {{previewCount}} 件</text>
+          <text class="preview-more" hover-class="hv-press" hover-stay-time="60" bindtap="onStartTap">去整理 ›</text>
+        </view>
+        <scroll-view class="preview-scroll" scroll-x>
+          <view
+            wx:for="{{previewItems}}"
+            wx:key="id"
+            class="chip {{item.must ? 'must' : 'opt'}} {{item.statusClass !== 'st0' ? 'done' : ''}}"
+          >
+            <view class="dot {{item.statusClass}}"></view>
+            <text class="chip-name">{{item.name}}</text>
+          </view>
+          <view
+            wx:if="{{previewCount > previewItems.length}}"
+            class="chip chip-more"
+            hover-class="hv-press"
+            hover-stay-time="60"
+            bindtap="onStartTap"
+          >+{{previewCount - previewItems.length}} 件 ›</view>
+        </scroll-view>
       </view>
 
       <!-- 分类宫格 -->
