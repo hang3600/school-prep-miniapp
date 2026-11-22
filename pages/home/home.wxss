@@ -18,9 +18,9 @@
   gap: var(--sp-gap);
 }
 
-/* ===== Hero · 极简 B（2026-11-22 紧凑重设计）=====
-   纵向仅 3 行：① 左上主信息 + 右上设置时间 ② 细时间尺 + 建议 ③ 整理进度。
-   主信息集中左上、设置入口常驻右上，数字缩到 <100rpx，整体高度较旧版缩约 40%。 */
+/* ===== Hero · 紧凑 A（2026-11-22 紧凑重设计）=====
+   纵向 3 行：① 左上主信息 + 右上改日期 ② 满宽细时间尺 ③ 浅绿完整建议条。
+   主信息集中左上、改日期入口常驻右上，数字 112rpx 保主角，建议完整可读不截断。 */
 .hero {
   padding: 8rpx 0 4rpx;
 }
@@ -52,7 +52,7 @@
   margin-top: 6rpx;
 }
 .hero-num {
-  font-size: 92rpx; /* B 稿 46px：较旧版 100rpx 缩 8rpx，视觉仍为主角 */
+  font-size: 112rpx; /* A 稿 56px：数字仍是视觉主角 */
   font-weight: 500;
   line-height: 1;
   color: var(--brand);
@@ -77,55 +77,59 @@
   color: var(--brand);
 }
 
-/* 右上设置时间按钮：小图标常驻，picker 绑定在 wxml 外层 */
+/* 右上改日期按钮：日历图标 + 文字胶囊，picker 绑定在 wxml 外层 */
 .hero-setting {
-  width: 64rpx;
-  height: 64rpx;
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 6rpx;
+  padding: 12rpx 16rpx;
   background: var(--brand-soft);
-  border-radius: 50%;
+  border-radius: 28rpx;
   transition: opacity 0.15s ease;
 }
 .hero-setting-icon {
-  width: 32rpx;
-  height: 32rpx;
+  width: 28rpx;
+  height: 28rpx;
+}
+.hero-setting-text {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--brand-deep);
+  white-space: nowrap;
 }
 .cd-press { opacity: 0.7; }
 
-/* 第二行：细时间尺（固定宽）+ 建议单行截断 */
-.hero-subrow {
-  display: flex;
-  align-items: center;
-  gap: 18rpx;
-  margin-top: 16rpx;
-}
+/* 第二行：满宽细时间尺 */
 .band {
   display: flex;
-  gap: 6rpx;
-  width: 200rpx;
-  flex-shrink: 0;
+  gap: 8rpx;
+  margin-top: 14rpx;
   transition: opacity 0.15s ease;
 }
 .band-seg {
   flex: 1;
-  height: 6rpx;
-  border-radius: 3rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
   background: #E4E6E0;
 }
 .band-seg.active {
   background: var(--brand);
 }
-.advice-inline {
-  flex: 1;
-  min-width: 0;
+
+/* 第三行：浅绿建议条——完整文案可读，点整条可改日期 */
+.advice-bar {
+  margin-top: 18rpx;
+  padding: 18rpx 20rpx;
+  background: #E7F3ED;
+  border-radius: 14rpx;
+  transition: opacity 0.15s ease;
+}
+.advice-bar-text {
+  display: block;
   font-size: var(--fs-indicator);
   color: var(--ink-2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.55;
 }
 
 /* 整理进度：一行带过 */

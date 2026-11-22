@@ -2,8 +2,8 @@
 
   <scroll-view class="content" scroll-y>
     <view class="content-inner">
-      <!-- Hero · 极简 B：主信息集中左上，设置时间按钮提到右上角，纵向压到 3 行
-           2026-11-22 紧凑重设计：数字 46px 级 + 阶段徽章 + 细时间尺与建议同行 -->
+      <!-- Hero · 紧凑 A：主信息集中左上，改日期按钮提到右上角，纵向 3 行（时间尺独占一行 + 浅绿建议条）
+           2026-11-22 紧凑重设计：数字 56px 级 + 阶段徽章 + 满宽细时间尺 + 浅绿完整建议条 -->
       <view class="hero">
         <!-- 顶行：左上主信息 / 右上设置时间 -->
         <view class="hero-top">
@@ -19,25 +19,30 @@
             </view>
           </view>
 
-          <!-- 右上设置时间按钮：picker 绑定不变，仅入口从建议条尾部上提到此 -->
+          <!-- 右上设置时间按钮：picker 绑定不变，日历图标 + 改日期常驻可见 -->
           <picker mode="date" start="{{dateStart}}" end="{{dateEnd}}" bindchange="onDateChange">
             <view class="hero-setting" hover-class="cd-press" hover-stay-time="60" aria-label="{{cdEdit}}开学日期">
-              <image class="hero-setting-icon" src="/images/icons/ic-settings.svg" mode="aspectFit" />
+              <image class="hero-setting-icon" src="/images/icons/ic-calendar.svg" mode="aspectFit" />
+              <text class="hero-setting-text">改日期</text>
             </view>
           </picker>
         </view>
 
-        <!-- 第二行：四段细时间尺 + 当前阶段建议（同行，建议单行截断） -->
-        <view class="hero-subrow">
-          <view class="band">
-            <view
-              wx:for="{{phaseBands}}"
-              wx:key="key"
-              class="band-seg {{activePhase === index ? 'active' : ''}}"
-            ></view>
-          </view>
-          <text class="advice-inline">{{advice}}</text>
+        <!-- 第二行：四段满宽细时间尺 -->
+        <view class="band">
+          <view
+            wx:for="{{phaseBands}}"
+            wx:key="key"
+            class="band-seg {{activePhase === index ? 'active' : ''}}"
+          ></view>
         </view>
+
+        <!-- 第三行：当前阶段该做什么 —— 浅绿建议条，完整文案可读 -->
+        <picker mode="date" start="{{dateStart}}" end="{{dateEnd}}" bindchange="onDateChange">
+          <view class="advice-bar" hover-class="cd-press" hover-stay-time="60">
+            <text class="advice-bar-text">{{advice}}</text>
+          </view>
+        </picker>
 
         <!-- 整理进度：一行带过，不抢倒计时的戏 -->
         <view class="hero-progress" wx:if="{{started}}">
