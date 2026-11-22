@@ -1,6 +1,7 @@
 const store = require('../../utils/store.js');
 const checkin = require('../../utils/checkin.js');
 const share = require('../../utils/share.js');
+const phase = require('../../utils/phase.js');
 const { CATEGORIES } = require('../../utils/categories.js');
 
 const STAGES = [
@@ -29,25 +30,7 @@ const TIPS = [
   '开学前一周开始每天收拾一点，别攒到最后一天突击打包。'
 ];
 
-// 分阶段准备建议：按「距开学剩余天数」给当下最该做的事
-// （纯本地日期计算，零成本；与首页宫格下方按日轮换的小贴士互补）
-const COUNTDOWN_ADVICE = [
-  { min: 22, text: '从容期：先把证件照、复印件这些要跑腿的办掉，行李慢慢置办。' },
-  { min: 8, text: '采购期：大件和网购的这周下单，留足发货时间。' },
-  { min: 3, text: '打包期：开始装箱，先装不常用的，证件放随身包。' },
-  { min: 1, text: '出发前：过一遍必带清单，充电宝充满电。' },
-  { min: 0, text: '今天开学，祝你报到顺利！' },
-  { min: -Infinity, text: '已开学：缺什么照着清单补齐就好。' }
-];
-
-// 时间带四段：与 COUNTDOWN_ADVICE 的分段口径一致（22+/8+/3+/0）
-// min 为该段起始剩余天数，max 仅供判定；idx 用于 WXML 高亮当前段
-const PHASE_BANDS = [
-  { key: 'calm', label: '从容期', min: 22 },
-  { key: 'buy', label: '采购期', min: 8 },
-  { key: 'pack', label: '打包期', min: 3 },
-  { key: 'go', label: '出发', min: 0 }
-];
+// 分阶段建议 / 时间带分段已收口到 utils/phase.js（首页与内页迷你时间带共用单源）
 
 // 首页清单预览：取前若干「必带」物品（跨分类），不足补「选带」，让用户首屏就看到真实清单内容
 function buildPreview(stage) {
@@ -98,7 +81,7 @@ Page({
     daysLeft: null,
     schoolDateText: '',
     // 时间带：四段等宽，当前段按下表高亮（由 refreshCountdown 计算）
-    phaseBands: PHASE_BANDS,
+    phaseBands: phase.PHASE_BANDS,
     activePhase: -1,
     // 日期选择范围（D2 修复：end 随当前年份动态 +2，不再硬编码 2026–2027 导致跨年失效）
     dateStart: '2020-01-01',
@@ -263,50 +246,11 @@ Page({
     this.refreshCountdown();
   },
 
-  // 开学倒计时：剩余天数 + 分阶段建议 + 时间带当前段（时区安全：手动解析 YYYY-MM-DD）
+  // 开学倒计时：剩余天数 + 分阶段建议 + 时间带当前段。
+  // 计算与文案收口在 utils/phase.js，首页与内页迷你时间带共用，行为与原实现逐字一致。
   refreshCountdown() {
     const diff = store.daysUntilSchool();
-    let countdownText;
-    let advice;
-    let activePhase = -1;
-    let schoolDateText = '';
-    if (diff === null) {
-      countdownText = '设置开学日期';
-      advice = '设置后按剩余天数给你分阶段准备建议';
-    } else {
-      if (diff > 0) {
-        countdownText = '距开学还有 ' + diff + ' 天';
-        advice = COUNTDOWN_ADVICE.find((a) => diff >= a.min).text;
-        // 当前段：从高到低找第一个满足 diff >= min 的段（22→8→3→0）
-        activePhase = PHASE_BANDS.findIndex((b) => diff >= b.min);
-      } else if (diff === 0) {
-        countdownText = '今天开学';
-        advice = COUNTDOWN_ADVICE[4].text;
-        activePhase = 3;
-      } else {
-        countdownText = '已开学 ' + -diff + ' 天';
-        advice = COUNTDOWN_ADVICE[5].text;
-        activePhase = 3;
-      }
-      // 日历日期文本：用 store 单源接口读回用户设定的开学日期，展示「9 月 1 日 · 星期一」
-      try {
-        const raw = store.getSchoolDate();
-        if (raw) {
-          const parts = raw.split('-');
-          const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-          const weeks = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-          schoolDateText = Number(parts[1]) + ' 月 ' + Number(parts[2]) + ' 日 · ' + weeks[d.getDay()];
-        }
-      } catch (e) {}
-    }
-    this.setData({
-      countdownText,
-      advice,
-      activePhase,
-      daysLeft: diff === null ? null : Math.abs(diff),
-      schoolDateText,
-      cdEdit: diff === null ? '去设置' : '修改'
-    });
+    this.setData(phase.countdownState(diff));
   },
 
   // 首页 Hero 倒计时行点击 → 原生日期 picker 修改开学日期

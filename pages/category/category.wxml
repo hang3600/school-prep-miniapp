@@ -2,6 +2,13 @@
 
   <scroll-view class="content" scroll-y>
     <view class="content-inner">
+      <!-- 迷你时间带：首页「开学时间带」母题的轻量延伸，点击回首页设日期 -->
+      <phase-strip
+        phase-label="{{phaseLabel}}"
+        day-text="{{dayText}}"
+        active-phase="{{activePhase}}"
+      />
+
       <!-- 搜索 -->
       <view class="search-bar">
         <image class="search-ic" src="/images/icons/ic-search.svg" mode="aspectFit" />

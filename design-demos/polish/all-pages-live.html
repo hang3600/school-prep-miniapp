@@ -27,6 +27,17 @@
   .tab-pill{padding:4px 14px; border-radius:30px;}
   .tab-pill.on{background:var(--brand); color:#fff;}
 
+  /* 迷你时间带（评审第 4 条：首页母题延伸内页） */
+  .strip{background:#fff;border-radius:16.1px;padding:12.5px 14.6px 11.5px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  .strip-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+  .strip-left{display:flex;align-items:baseline;gap:8px;min-width:0;}
+  .strip-label{font-size:14px;font-weight:600;color:var(--brand-deep);flex-shrink:0;}
+  .strip-day{font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .strip-edit{font-size:11.5px;color:var(--brand);flex-shrink:0;}
+  .strip-band{display:flex;gap:4px;margin-top:10.4px;}
+  .strip-seg{flex:1;height:5px;border-radius:2.5px;background:#E4E6E0;}
+  .strip-seg.active{background:var(--brand);}
+
   /* 分类页 */
   .search-bar{display:flex; align-items:center; background:#fff; border-radius:14px; padding:0 12px; height:40px; box-shadow:0 2px 8px rgba(0,0,0,.06);}
   .search-ic{width:19px;height:19px;color:var(--gray);}
@@ -153,6 +164,10 @@
 <div class="col"><div class="cap">分类页 · 首屏</div><div class="phone">
   <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div><div class="nav">物品分类</div>
   <div class="content-inner">
+    <div class="strip">
+      <div class="strip-top"><div class="strip-left"><span class="strip-label">打包期</span><span class="strip-day">5 天后开学</span></div><span class="strip-edit">设置日期 ›</span></div>
+      <div class="strip-band"><div class="strip-seg"></div><div class="strip-seg"></div><div class="strip-seg active"></div><div class="strip-seg"></div></div>
+    </div>
     <div class="search-bar"><span class="search-ic">⌕</span><span class="search-input">搜索开学必备物品</span></div>
     <span class="section-title">开学物品全部分类</span>
     <div class="cat-list">
@@ -199,6 +214,10 @@
 <div class="col"><div class="cap">进度页 · 首屏</div><div class="phone">
   <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div><div class="nav">整理进度</div>
   <div class="content-inner">
+    <div class="strip">
+      <div class="strip-top"><div class="strip-left"><span class="strip-label">打包期</span><span class="strip-day">5 天后开学</span></div><span class="strip-edit">设置日期 ›</span></div>
+      <div class="strip-band"><div class="strip-seg"></div><div class="strip-seg"></div><div class="strip-seg active"></div><div class="strip-seg"></div></div>
+    </div>
     <div class="streak"><div><span class="streak-label">连续打卡</span><div><span class="streak-num">7</span><span class="streak-unit">天</span></div></div><div class="medal">🏅</div></div>
     <div class="chip-row"><span class="chip active">大学</span><span class="chip">高中</span><span class="chip">初中</span><span class="chip">小学</span></div>
     <div class="section-head"><span class="section-title">大学 · 分类完成度</span><span class="section-sub">整体 35%</span></div>

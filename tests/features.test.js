@@ -194,6 +194,55 @@ function run() {
     page.onLoad();
     assert('版本号取自线上账号信息', page.data.version === '1.0.0', page.data.version);
   }
+
+  // ---------- 9. 时间带单源（评审第 4 条：首页母题向内页延伸）----------
+  {
+    const state = makeState();
+    const env = makeEnv(state);
+    const store = env.load('utils/store.js');
+    const phase = env.load('utils/phase.js');
+
+    // countdownState 与首页历史行为逐字一致
+    assert('单源 未设置日期 → 引导态全字段', (function () {
+      const s = phase.countdownState(null);
+      return s.countdownText === '设置开学日期' && s.activePhase === -1 && s.daysLeft === null && s.cdEdit === '去设置';
+    })());
+
+    store.setSchoolDate(fmt(30));
+    const c30 = phase.countdownState(store.daysUntilSchool());
+    assert('单源 30 天 → 从容期第 0 段', c30.activePhase === 0 && c30.daysLeft === 30 && c30.advice.indexOf('从容期') !== -1,
+      c30);
+    store.setSchoolDate(fmt(5));
+    assert('单源 5 天 → 打包期第 2 段', phase.countdownState(store.daysUntilSchool()).activePhase === 2);
+    store.setSchoolDate(fmt(0));
+    assert('单源 当天 → 今天开学第 3 段', phase.countdownState(store.daysUntilSchool()).countdownText === '今天开学');
+
+    // miniStrip 与首页共用同一分段口径（activePhase 必须对齐）
+    store.setSchoolDate(fmt(30));
+    const m30 = phase.miniStrip(store.daysUntilSchool());
+    assert('迷你带 30 天 → 与首页同段 + 从容期文案', m30.activePhase === 0 && m30.phaseLabel === '从容期' && m30.dayText === '30 天后开学', m30);
+    store.setSchoolDate(fmt(5));
+    assert('迷你带 5 天 → 第 2 段', phase.miniStrip(store.daysUntilSchool()).activePhase === 2);
+    assert('迷你带 未设置 → 全灰 -1 + 引导语', phase.miniStrip(null).activePhase === -1 && phase.miniStrip(null).dayText.indexOf('开学日期') !== -1);
+  }
+
+  // ---------- 10. 内页携带迷你时间带数据（分类页 / 进度页）----------
+  {
+    const state = makeState();
+    const env = makeEnv(state);
+    const store = env.load('utils/store.js');
+    store.setSchoolDate(fmt(10));
+
+    const cat = instantiate(loadPage(env, 'pages/category/category.js'));
+    cat.onReady();
+    assert('分类页迷你带 10 天 → 采购期第 1 段', cat.data.activePhase === 1 && cat.data.phaseLabel === '采购期' && cat.data.dayText === '10 天后开学',
+      { phase: cat.data.activePhase, label: cat.data.phaseLabel, day: cat.data.dayText });
+
+    const prog = instantiate(loadPage(env, 'pages/progress/progress.js'));
+    prog.onReady();
+    assert('进度页迷你带与分类页同段（单源一致）', prog.data.activePhase === cat.data.activePhase && prog.data.phaseLabel === cat.data.phaseLabel,
+      { prog: prog.data.activePhase, cat: cat.data.activePhase });
+  }
 }
 
 module.exports = { run, name: 'features' };

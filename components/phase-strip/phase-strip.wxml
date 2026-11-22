@@ -1,0 +1,18 @@
+<!-- 迷你时间带：首页四段刻度的轻量化身，点击回首页设置/修改开学日期 -->
+<view class="strip" hover-class="strip-press" hover-stay-time="60" bindtap="onTap">
+  <view class="strip-top">
+    <view class="strip-left">
+      <text class="strip-label">{{phaseLabel}}</text>
+      <text class="strip-day">{{dayText}}</text>
+    </view>
+    <text class="strip-edit">设置日期 ›</text>
+  </view>
+  <!-- 四段等宽刻度：当前段实心绿，其余浅灰（与首页 band 同款口径） -->
+  <view class="strip-band">
+    <view
+      wx:for="{{bands}}"
+      wx:key="key"
+      class="strip-seg {{activePhase === index ? 'active' : ''}}"
+    ></view>
+  </view>
+</view>

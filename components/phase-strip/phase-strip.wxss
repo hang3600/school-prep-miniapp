@@ -1,0 +1,58 @@
+/* 迷你时间带：首页母题的内页化身——保留白卡质感，但比首页 Hero 更轻、更扁 */
+.strip {
+  background: #ffffff;
+  border-radius: var(--r-card);
+  padding: 24rpx 28rpx 22rpx;
+  box-shadow: var(--shadow-1);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.strip-press {
+  opacity: 0.85;
+  transform: scale(0.985);
+}
+.strip-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+.strip-left {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
+  min-width: 0;
+}
+.strip-label {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--brand-deep);
+  flex-shrink: 0;
+}
+.strip-day {
+  font-size: var(--fs-indicator);
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.strip-edit {
+  font-size: 22rpx;
+  color: var(--brand);
+  flex-shrink: 0;
+}
+/* 四段刻度：比首页 14rpx 更细（10rpx），仍等宽、当前段实心绿 */
+.strip-band {
+  display: flex;
+  gap: 8rpx;
+  margin-top: 20rpx;
+}
+.strip-seg {
+  flex: 1;
+  height: 10rpx;
+  border-radius: 5rpx;
+  background: #E4E6E0;
+  transition: background 0.3s ease;
+}
+.strip-seg.active {
+  background: var(--brand);
+}

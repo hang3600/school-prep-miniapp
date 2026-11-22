@@ -1,6 +1,7 @@
 const store = require('../../utils/store.js');
 const checkin = require('../../utils/checkin.js');
 const share = require('../../utils/share.js');
+const phase = require('../../utils/phase.js');
 const { CATEGORIES } = require('../../utils/categories.js');
 
 const STAGES = [
@@ -18,7 +19,11 @@ Page({
     stageLabel: '大学',
     stageChips: [],
     cats: [],
-    overallPercent: 0
+    overallPercent: 0,
+    // 迷你时间带（首页母题延伸）：数据由 refresh 在 onReady 后计算，onShow 首屏不读 storage
+    phaseLabel: '开学倒计时',
+    dayText: '设个开学日期，跟着节奏走',
+    activePhase: -1
   },
 
   onLoad() {
@@ -76,12 +81,17 @@ Page({
     const totalDone = STAGES.reduce((sum, s) => sum + store.computeStageProgress(s.key, coreOnly).done, 0);
     const anyFull = STAGES.some((s) => store.computeStageProgress(s.key, coreOnly).percent >= 100);
 
+    // 迷你时间带：与首页共用 phase 单源，读到的是同一份开学日期与分段口径
+    const strip = phase.miniStrip(store.daysUntilSchool());
     this.setData({
       stage: stageKey,
       stageLabel,
       stageChips,
       cats,
       overallPercent: overall.percent,
+      phaseLabel: strip.phaseLabel,
+      dayText: strip.dayText,
+      activePhase: strip.activePhase,
       streakDays: st.streak,
       badges: [
         { name: '收纳达人', icon: 'ic-bag', unlocked: totalDone >= 10 },

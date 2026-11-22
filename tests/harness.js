@@ -152,6 +152,7 @@ function makeEnv(state) {
     ctx.require = (p) => {
       const norm = p.replace(/^\.\.\//, '').replace(/^\.\//, '');
       if (norm.indexOf('store') !== -1) return load('utils/store.js');
+      if (norm.indexOf('phase') !== -1) return load('utils/phase.js');
       if (norm.indexOf('checkin') !== -1) return load('utils/checkin.js');
       if (norm.indexOf('share') !== -1) return load('utils/share.js');
       if (norm.indexOf('categories') !== -1) return load('utils/categories.js');

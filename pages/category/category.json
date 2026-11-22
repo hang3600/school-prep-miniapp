@@ -1,4 +1,6 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "phase-strip": "/components/phase-strip/phase-strip"
+  },
   "navigationBarTitleText": "开学物品分类"
 }
