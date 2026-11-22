@@ -16,7 +16,7 @@
           <view class="step-num num">2</view>
           <view class="step-mid">
             <text class="step-title">逐类勾选</text>
-            <text class="step-desc">证件材料、生活用品、学习用品等 7 大分类</text>
+            <text class="step-desc">证件材料、住宿寝室、衣物鞋饰等 8 大分类</text>
           </view>
         </view>
         <view class="step-row">

@@ -63,9 +63,11 @@ function run() {
     assert('picker 修改生效', store.getSchoolDate() === fmt(15) && home.data.countdownText === '距开学还有 15 天',
       home.data.countdownText);
 
-    // 宫格计数
-    assert('宫格 7 个分类', home.data.categories.length === 7);
-    assert('宫格计数含军训 10 件', home.data.categories.find((c) => c.key === 'mil').count === 10);
+    // 宫格计数（8 类 4+4 两行直显）
+    assert('宫格 8 个分类', home.data.categories.length === 8);
+    assert('宫格计数含军训 16 件', home.data.categories.find((c) => c.key === 'mil').count === 16);
+    assert('宫格含新增药品健康 16 件', home.data.categories.find((c) => c.key === 'med').count === 16);
+    assert('宫格件数合计 172', home.data.categories.reduce((s, c) => s + c.count, 0) === 172);
     assert('今日小贴士非空', typeof home.data.tip === 'string' && home.data.tip.length > 0);
   }
 
@@ -94,7 +96,7 @@ function run() {
     page.onReady(); // 首屏渲染完成后才加载清单（对齐 onLoad→onReady 生命周期）
 
     assert('导航标题 = 分类名', state.title === '军训用品', state.title);
-    assert('军训分类 10 条', page.data.totalCount === 10, page.data.totalCount);
+    assert('军训分类 16 条', page.data.totalCount === 16, page.data.totalCount);
 
     const it = page.data.groups[0].items[0];
     page.toggleItem({ currentTarget: { dataset: { id: it.id, name: it.name } } });
@@ -106,9 +108,9 @@ function run() {
 
     // 长按删除（modalConfirm 默认 true）
     page.onItemLongPress({ currentTarget: { dataset: { id: it.id, name: it.name } } });
-    assert('长按删除 → 总数 -1', page.data.totalCount === 9, page.data.totalCount);
+    assert('长按删除 → 总数 -1', page.data.totalCount === 15, page.data.totalCount);
     assert('删除弹窗含物品名', state.modals.some((m) => m.content.indexOf(it.name) !== -1));
-    assert('删除后 store 同步', store.getChecklist('college', 'mil').length === 9);
+    assert('删除后 store 同步', store.getChecklist('college', 'mil').length === 15);
   }
 
   // ---------- 4. 清单页：全部分组完成庆祝 ----------
@@ -117,7 +119,7 @@ function run() {
     const env = makeEnv(state);
     const store = env.load('utils/store.js');
     const page = instantiate(loadPage(env, 'pages/checklist/checklist.js'));
-    page.onLoad({ cat: 'bed' }); // 床品 8 条，较少
+    page.onLoad({ cat: 'med' }); // 药品健康 16 条，装包循环验证
     page.onReady(); // 首屏渲染完成后才加载清单（对齐 onLoad→onReady 生命周期）
 
     const all = [];
@@ -153,7 +155,7 @@ function run() {
     profile.onShow();
     profile.onReady();
 
-    assert('profile 统计总件数 75', profile.data.stats[0].trend === '共 75 件', profile.data.stats[0].trend);
+    assert('profile 统计总件数 172', profile.data.stats[0].trend === '共 172 件', profile.data.stats[0].trend);
 
     // 先制造一些用户数据：勾选一件
     const id = store.getChecklist('college', 'id')[0].id;

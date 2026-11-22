@@ -19,7 +19,7 @@ App({
     stage: 'college',
     stages: ['college', 'high', 'middle', 'primary'],
     stageLabels: { college: '大学', high: '高中', middle: '初中', primary: '小学' },
-    // 分类元数据（7 大分类含军训）单一数据源见 utils/categories.js，
+    // 分类元数据（8 大分类含药品健康与军训）单一数据源见 utils/categories.js，
     // 由 home / category / checklist / add-item-sheet 各自 require，此处不再维护副本。
     // 隐私合规相关（微信 2023 起强制）
     brand: '#2F8F6B',

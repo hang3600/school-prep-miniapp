@@ -10,20 +10,22 @@ const h = require('./harness.js');
 const { assert, makeState, makeEnv, loadPage, instantiate } = h;
 
 function run() {
-  // ========== 1. 分类语义：bed 不得与 shirt（衣物鞋包）重叠 ==========
+  // ========== 1. 分类语义：bed（住宿寝室）不得与 shirt（衣物鞋饰）重叠 ==========
   {
     const { CATEGORIES, CAT_MAP } = require('../utils/categories.js');
     const bed = CATEGORIES.find((c) => c.key === 'bed');
     const shirt = CATEGORIES.find((c) => c.key === 'shirt');
 
     assert('bed 标签不再叫「宿舍衣物」', bed.label !== '宿舍衣物', bed.label);
-    assert('bed 标签为「床品寝室」', bed.label === '床品寝室', bed.label);
+    assert('bed 标签为「住宿寝室」', bed.label === '住宿寝室', bed.label);
     assert('bed desc 不再含「衣物 / 鞋包」（与 shirt 去重）',
       bed.desc.indexOf('衣物') === -1 && bed.desc.indexOf('鞋包') === -1, bed.desc);
-    assert('shirt 保持「衣物鞋包」语义', shirt.label === '衣物鞋包', shirt.label);
+    assert('shirt 保持「衣物鞋饰」语义', shirt.label === '衣物鞋饰', shirt.label);
 
-    // 单源健康性：7 分类、key 无重复、CAT_MAP 与 CATEGORIES 一致
-    assert('分类数 7', CATEGORIES.length === 7, CATEGORIES.length);
+    // 单源健康性：8 分类、key 无重复、CAT_MAP 与 CATEGORIES 一致
+    assert('分类数 8', CATEGORIES.length === 8, CATEGORIES.length);
+    assert('八类顺序与 store.CAT_KEYS 同序',
+      CATEGORIES.map((c) => c.key).join(',') === 'id,bed,shirt,soap,book,laptop,med,mil');
     const keys = CATEGORIES.map((c) => c.key);
     assert('分类 key 无重复', new Set(keys).size === keys.length);
     assert('CAT_MAP 与 CATEGORIES 对齐', CATEGORIES.every((c) => CAT_MAP[c.key] === c.label));
@@ -35,11 +37,12 @@ function run() {
     const env = makeEnv(state);
     const cfg = loadPage(env, 'pages/about/about.js');
     const page = instantiate(cfg);
-    const feat = page.data.features.find((f) => f.title === '7 大分类');
+    const feat = page.data.features.find((f) => f.title === '8 大分类');
 
-    assert('about 分类描述含「床品寝室」', feat.desc.indexOf('床品寝室') !== -1, feat.desc);
+    assert('about 分类描述含「住宿寝室」', feat.desc.indexOf('住宿寝室') !== -1, feat.desc);
+    assert('about 分类描述含新增「药品健康」', feat.desc.indexOf('药品健康') !== -1, feat.desc);
     assert('about 分类描述已无旧词「宿舍衣物」', feat.desc.indexOf('宿舍衣物') === -1, feat.desc);
-    assert('about 分类描述覆盖全部 7 个分类', feat.desc.split('、').length === 7, feat.desc);
+    assert('about 分类描述覆盖全部 8 个分类', feat.desc.split('、').length === 8, feat.desc);
   }
 
   // ========== 3. 添加物品输入校验 ==========

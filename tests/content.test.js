@@ -2,7 +2,7 @@
  * 竞品内容落地回归：内容数据模块 + 决策三态 + 清单页提醒/说明卡渲染
  * --------------------------------------------------
  * 覆盖：
- * ① 内容模块：10 类 172 件、7 类说明卡、94 件种子提醒全覆盖
+ * ① 内容模块：竞品 10 类 172 件 → 我们 8 类 172 件、8 类说明卡、全种子提醒覆盖
  * ② decision 决策 API：三态循环、与 status 隔离、持久化、老数据补 0
  * ③ 清单页：分类说明卡注入、提醒小字、决策标签、图例按需显示
  */
@@ -21,25 +21,44 @@ function run() {
   assert('竞品提醒文案非空', st.tips > 0, st.tips);
   assert('种子提醒 90 条', st.seedTips === 90, st.seedTips);
 
-  // 7 个我们自己的分类都有说明卡
-  const cats = ['id', 'soap', 'book', 'bed', 'laptop', 'shirt', 'mil'];
+  // 8 个分类都有说明卡，且说明卡 note 点出了类内小项
+  const cats = ['id', 'bed', 'shirt', 'soap', 'book', 'laptop', 'med', 'mil'];
   cats.forEach((c) => {
     const a = ce.getCatAdvice(c);
     assert('分类 ' + c + ' 有说明卡', !!a && !!a.subtitle && !!a.note);
+    assert('分类 ' + c + ' 说明卡含小项分组', !!a && /[\/／]/.test(a.note), a && a.note);
   });
   assert('未知分类无说明卡', ce.getCatAdvice('nope') === null);
 
-  // 94 件种子物品逐条有提醒（从 store 源码提取名字，与内容模块交叉验证）
-  const fs = require('fs');
-  const path = require('path');
-  const src = fs.readFileSync(path.join(__dirname, '..', 'utils', 'store.js'), 'utf8');
-  const names = [...new Set([...src.matchAll(/\{ name: '([^']+)'/g)].map((m) => m[1]))]
-    .filter((n) => n !== '必带' && n !== '选带');
-  const noTip = names.filter((n) => !ce.getTip(n));
-  assert('94 件种子提醒全覆盖', names.length === 94 && noTip.length === 0,
-    '种子' + names.length + ' 缺' + noTip.length + ':' + noTip.join('/'));
-  assert('单件提醒文案正确（身份证）', ce.getTip('身份证').indexOf('复印件') !== -1, ce.getTip('身份证'));
-  assert('到校买类提醒（插线板合规）', ce.getTip('插线板').indexOf('合规') !== -1, ce.getTip('插线板'));
+  // 八类单源：件数 15/33/19/46/13/14/16/16，172 件不重不漏，核心 20 件
+  const e8 = ce.getEightCategories();
+  assert('八类单源 8 类', e8.length === 8, e8.length);
+  assert('八类映射件数正确', e8.map((c) => c.names.length).join('/') === '15/33/19/46/13/14/16/16',
+    e8.map((c) => c.names.length).join('/'));
+  const richNames = ce.RICH_CATEGORIES.flatMap((c) => [...c.items, ...c.boys, ...c.girls]);
+  const mapped = e8.flatMap((c) => c.names);
+  assert('竞品 172 件全部映射且不丢', richNames.every((n) => mapped.indexOf(n) !== -1) && mapped.length === 172,
+    mapped.length);
+  assert('核心 20 件单源', e8.reduce((s, c) => s + c.core.length, 0) === 20);
+
+  // 全学段种子逐条有提醒（直接遍历 store 实际生成的数据，而非源码文本）
+  const store0 = env0.load('utils/store.js');
+  const collegeNames = [];
+  store0.CAT_KEYS.forEach((cat) => {
+    store0.getChecklist('college', cat).forEach((it) => collegeNames.push(it.name));
+  });
+  const allNames = new Set(collegeNames);
+  store0.STAGE_KEYS.forEach((sg) => {
+    store0.CAT_KEYS.forEach((cat) => {
+      store0.getChecklist(sg, cat).forEach((it) => allNames.add(it.name));
+    });
+  });
+  const noTip = [...allNames].filter((n) => !ce.getTip(n));
+  assert('大学 172 件种子', collegeNames.length === 172, collegeNames.length);
+  assert('四学段全部种子提醒全覆盖', allNames.size >= 172 && noTip.length === 0,
+    '种子' + allNames.size + ' 缺' + noTip.length + ':' + noTip.join('/'));
+  assert('单件提醒文案正确（身份证原件）', ce.getTip('身份证原件').indexOf('复印件') !== -1, ce.getTip('身份证原件'));
+  assert('到校买类提醒（多孔插排合规）', ce.getTip('多孔插排').indexOf('合规') !== -1, ce.getTip('多孔插排'));
 
   // ===== ② decision 决策 API =====
   const state = makeState();
@@ -66,7 +85,7 @@ function run() {
 
   // 不存在 id 无副作用
   store.cycleDecision('college', 'id', 'not_exist');
-  assert('cycleDecision 不存在 id 无副作用', store.getChecklist('college', 'id').length === 13);
+  assert('cycleDecision 不存在 id 无副作用', store.getChecklist('college', 'id').length === 15);
 
   // 老数据缺 decision 自动补 0（不破坏 status）
   const state2 = makeState({
@@ -119,7 +138,7 @@ function run() {
   // 复制到剪贴板仍用纯物品名（提醒文案不混入）
   page.copyListText(store3.getChecklist('college', 'id'));
   const copied = state3.clipboard || '';
-  assert('复制清单不含提醒文案', copied.indexOf('报到当天必带') === -1 && copied.indexOf('录取通知书') !== -1, copied.slice(0, 80));
+  assert('复制清单不含提醒文案', copied.indexOf('与复印件、电子备份分开放') === -1 && copied.indexOf('录取通知书') !== -1, copied.slice(0, 80));
 }
 
 module.exports = { run, name: 'content' };

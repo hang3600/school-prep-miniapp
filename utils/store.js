@@ -19,114 +19,37 @@
  *     与 status 组合成事实四态（进度圈 + 决策标签两个维度），不影响原有进度统计。
  *     提醒文案（tip）为静态内容，不入库，渲染时由 content-enrich 按名称动态查。
  * 首次启动自动写入种子清单；勾选 / 添加自定义物品都会持久化。
+ *
+ * 2026-11-22 八大分类重排：竞品 10 类拆解合并为 8 类（172 件），
+ * 分类 / 物品 / 必带 / 核心白名单的单源在 content-enrich.EIGHT_CATEGORIES，
+ * 本文件只做数据层编排（学段裁剪、迁移、进度统计）。
  */
+
+// 八大分类 / 172 件物品 / 必带与核心白名单的唯一来源
+const content = require('./content-enrich.js');
 
 const KEY = 'schoolprep_v1';
 
 const STAGE_KEYS = ['college', 'high', 'middle', 'primary'];
-const CAT_KEYS = ['id', 'soap', 'book', 'bed', 'laptop', 'shirt', 'mil'];
+// 顺序与 categories.js / EIGHT_CATEGORIES 严格一致，保证「下一步」与宫格视觉同序
+const CAT_KEYS = content.EIGHT_CATEGORIES.map((c) => c.key);
 
-// 各分类默认种子（贴近真实新生入学打包场景：必带 = 刚缺不可，选带 = 备用/按需）
-// 共 75 条：id 13 / soap 16 / book 11 / bed 8 / laptop 9 / shirt 8 / mil 10
-const SEED_ITEMS = {
-  id: [
-    { name: '身份证', must: true },
-    { name: '录取通知书', must: true },
-    { name: '户口本复印件', must: true },
-    { name: '一寸证件照（红底·蓝底）', must: true },
-    { name: '身份证复印件 ×3', must: true },
-    { name: '银行卡', must: true },
-    { name: '学生证', must: false },
-    { name: '高考准考证', must: false },
-    { name: '二寸证件照', must: false },
-    { name: '团组织关系档案', must: false },
-    { name: '助学贷款回执单', must: false },
-    { name: '体检报告', must: false },
-    { name: '团员证', must: false }
-  ],
-  soap: [
-    { name: '牙刷 + 牙膏', must: true },
-    { name: '毛巾 ×2', must: true },
-    { name: '洗发水 + 沐浴露', must: true },
-    { name: '洗衣液', must: true },
-    { name: '水杯', must: true },
-    { name: '纸巾', must: true },
-    { name: '晴雨两用伞', must: true },
-    { name: '柜子挂锁', must: true },
-    { name: '常用药包（感冒药·创可贴）', must: true },
-    { name: '脸盆', must: false },
-    { name: '衣架 ×10', must: false },
-    { name: '防晒霜', must: false },
-    { name: '湿巾', must: false },
-    { name: '垃圾袋', must: false },
-    { name: '洗漱杯 + 梳子', must: false },
-    { name: '暖水壶', must: false }
-  ],
-  book: [
-    { name: '笔记本', must: true },
-    { name: '中性笔', must: true },
-    { name: '台灯', must: true },
-    { name: '双肩书包', must: true },
-    { name: '文件夹', must: false },
-    { name: '荧光笔', must: false },
-    { name: '计算器', must: false },
-    { name: '便利贴', must: false },
-    { name: '橡皮 + 尺子', must: false },
-    { name: '胶带 + 剪刀', must: false },
-    { name: '订书机', must: false }
-  ],
-  bed: [
-    { name: '床单 + 被套', must: true },
-    { name: '夏凉被', must: true },
-    { name: '枕头', must: true },
-    { name: '睡衣', must: false },
-    { name: '蚊帐', must: false },
-    { name: '凉席', must: false },
-    { name: '床帘', must: false },
-    { name: '床垫（薄款）', must: false }
-  ],
-  laptop: [
-    { name: '笔记本电脑', must: true },
-    { name: '充电器', must: true },
-    { name: '插线板', must: true },
-    { name: '充电宝', must: true },
-    { name: '鼠标', must: false },
-    { name: 'U 盘', must: false },
-    { name: '耳机', must: false },
-    { name: '数据线（多备一根）', must: false },
-    { name: '手机支架', must: false }
-  ],
-  shirt: [
-    { name: 'T恤 ×5', must: true },
-    { name: '牛仔裤', must: true },
-    { name: '运动鞋', must: true },
-    { name: '拖鞋', must: true },
-    { name: '袜子 ×7', must: true },
-    { name: '内衣裤 ×5', must: true },
-    { name: '外套', must: false },
-    { name: '皮带', must: false }
-  ],
-  // 军训用品（国内初/高中/大学普遍有军训，取国内高校新生攻略高频项）
-  mil: [
-    { name: '防晒霜（SPF50+）', must: true },
-    { name: '运动鞋垫 ×2', must: true },
-    { name: '大容量水杯', must: true },
-    { name: '藿香正气水', must: true },
-    { name: '花露水 / 驱蚊液', must: false },
-    { name: '湿巾 + 纸巾', must: false },
-    { name: '速干毛巾', must: false },
-    { name: '芦荟胶（晒后修复）', must: false },
-    { name: '腰带（配军训服）', must: false },
-    { name: '糖果（防低血糖）', must: false }
-  ]
-};
+// 各分类默认种子：从 EIGHT_CATEGORIES 派生（竞品 172 件，一件不丢）。
+// names 顺序即种子序号（id 后缀），前 must 条为必带，其余选带。
+// 大学为默认基准（172 件）；学段差异由下方 STAGE_EXTRA_ITEMS / STAGE_EXCLUDE 裁剪。
+const SEED_ITEMS = {};
+content.EIGHT_CATEGORIES.forEach((c) => {
+  SEED_ITEMS[c.key] = c.names.map((name, i) => ({ name, must: i < c.must }));
+});
 
-// ===== 学段专属物品（共用 75 件之外，按学段追加）=====
+// ===== 学段专属物品（共用 172 件之外，按学段追加）=====
 // 设计原则：
-// ① 大学学段不动（保持 75 件，作为默认基准与迁移锚点）
+// ① 大学学段不动（保持 172 件，作为默认基准与迁移锚点）
 // ② 序号从共用清单长度之后连续编排，天然 ≥ LEGACY_SEED_COUNTS，
 //    老用户 migrate() 会自动追加这些新种子（已勾选项不受影响）
 // ③ 只追加不删除：老用户已有清单不会被裁剪，避免丢失勾选进度
+// ④ 八大分类后按语义归位：雨衣 / 保温杯 / 小雨伞归住宿寝室（竞品宿舍类），
+//    提神饮品归药品健康，避免塞进「洗漱护理」造成语义错配。
 const STAGE_EXTRA_ITEMS = {
   high: {
     // 高中：走读/住校，学业压力大，强调复习资料与作息用品
@@ -137,7 +60,7 @@ const STAGE_EXTRA_ITEMS = {
       { name: '计时器', must: false }
     ],
     id: [{ name: '学籍档案', must: true }],
-    soap: [{ name: '咖啡 / 提神饮品', must: false }],
+    med: [{ name: '咖啡 / 提神饮品', must: false }],
     laptop: [{ name: '学习平板（选带）', must: false }]
   },
   middle: {
@@ -148,13 +71,13 @@ const STAGE_EXTRA_ITEMS = {
       { name: '书包（轻便款）', must: false }
     ],
     shirt: [{ name: '校服 ×2', must: true }],
-    soap: [{ name: '雨衣', must: false }],
+    bed: [{ name: '雨衣', must: false }],
     id: [{ name: '学生卡', must: true }]
   },
   primary: {
     // 小学：家长代劳，强调姓名标识、低龄友好餐具与文具
     id: [{ name: '姓名贴 / 姓名章', must: true }],
-    soap: [
+    bed: [
       { name: '儿童保温杯', must: true },
       { name: '小雨伞（儿童款）', must: false }
     ],
@@ -168,36 +91,55 @@ const STAGE_EXTRA_ITEMS = {
   }
 };
 
-// 学段排除表：从共用清单里剔除明显不适合该学段的物品。
-// 小学：不带电脑/军训/床帘等住校装备（多为走读、家长代劳）
-// 初中：不含军训腰带与床帘（部分走读），但保留军训主体
+// 学段排除表：从共用清单里剔除明显不适合该学段的物品（按竞品新名字）。
+// 小学：不带手机/电脑/插排与床帘等住校装备（多为走读、家长代劳）
+// 初中：不含床帘与平板/移动硬盘（部分走读），但保留军训主体
 const STAGE_EXCLUDE = {
   primary: {
-    laptop: ['笔记本电脑', '充电器', '插线板', '鼠标', 'U 盘', '手机支架'],
-    mil: ['运动鞋垫 ×2', '腰带（配军训服）', '藿香正气水', '芦荟胶（晒后修复）'],
-    bed: ['床帘', '凉席', '床垫（薄款）']
+    laptop: ['手机', '手机充电器', '笔记本电脑', '电脑充电器和电脑包', 'U盘', '多孔插排'],
+    mil: ['高倍防晒霜或防晒喷雾', '军训鞋垫', '替换鞋垫', '防磨脚贴', '芦荟胶或晒后修护用品'],
+    bed: ['床帘（按宿舍规定）', '凉席（按季节）', '床垫或褥子']
   },
   middle: {
-    bed: ['床帘'],
-    laptop: ['鼠标', '手机支架']
+    bed: ['床帘（按宿舍规定）'],
+    laptop: ['平板和手写笔（按需）', '移动硬盘（按需）']
   }
 };
 
-// 核心物品白名单（快速模式）：从 75 件必带中挑最高频的 20 件。
-// 按物品名精确匹配，独立于种子结构，用户自定义物品不参与核心模式。
-const CORE_ITEM_NAMES = [
-  '身份证', '录取通知书', '户口本复印件', '银行卡', '一寸证件照（红底·蓝底）',
-  '牙刷 + 牙膏', '毛巾 ×2', '洗发水 + 沐浴露', '水杯', '常用药包（感冒药·创可贴）',
-  '笔记本', '中性笔', '双肩书包',
-  '床单 + 被套', '枕头',
-  '笔记本电脑', '充电器', '插线板',
-  'T恤 ×5', '运动鞋'
-];
+// 核心物品白名单（快速模式）：从 172 件里挑最高频的 20 件。
+// 与 EIGHT_CATEGORIES.core 单源对齐（5+3+2+3+3+4=20），用户自定义物品不参与核心模式。
+const CORE_ITEM_NAMES = content.EIGHT_CATEGORIES.reduce((out, c) => out.concat(c.core), []);
 const CORE_SET = CORE_ITEM_NAMES.reduce((m, n) => { m[n] = true; return m; }, {});
 
-// 老版本种子分界：上线版本各分类的种子条数。
+// 老物品名 → 竞品新名别名：8 类重排时我们旧种子名被竞品名替换，
+// 老用户 storage 里仍是旧名，migrate 按别名命中核心白名单，
+// 否则升级后 core 标记全丢、核心模式看不到自己勾过的物品。
+const LEGACY_NAME_ALIASES = {
+  '身份证': '身份证原件',
+  '户口本复印件': '户口本主页和本人页复印件',
+  '一寸证件照（红底·蓝底）': '一寸和二寸证件照',
+  '二寸证件照': '一寸和二寸证件照',
+  '银行卡': '学校指定银行卡',
+  '牙刷 + 牙膏': '牙刷、牙膏和漱口杯',
+  '毛巾 ×2': '毛巾',
+  '洗发水 + 沐浴露': '洗发水',
+  '床单 + 被套': '床单',
+  '枕头': '枕头和枕套',
+  '插线板': '多孔插排',
+  '充电器': '手机充电器',
+  'T恤 ×5': '应季上衣',
+  '中性笔': '黑色、蓝色和红色签字笔',
+  '双肩书包': '日常书包',
+  '常用药包（感冒药·创可贴）': '常用感冒药'
+};
+function isCoreName(name) {
+  return !!CORE_SET[name] || !!CORE_SET[LEGACY_NAME_ALIASES[name] || ''];
+}
+
+// 老版本种子分界：7 分类时代各分类的种子条数。
 // 迁移时只给老用户追加「序号 ≥ 分界」的新种子，已删除的旧种子不复活。
-const LEGACY_SEED_COUNTS = { id: 7, soap: 8, book: 6, bed: 5, laptop: 6, shirt: 6, mil: 10 };
+// med 为新分类（老数据不存在），走「缺分类全量补种」分支，这里记 0 仅作兜底。
+const LEGACY_SEED_COUNTS = { id: 7, soap: 8, book: 6, bed: 5, laptop: 6, shirt: 6, mil: 10, med: 0 };
 
 // 生成某学段某分类的种子物品数组（id 唯一：s_学段_分类_序号）
 function seedItems(stage, cat) {
@@ -214,7 +156,7 @@ function seedItems(stage, cat) {
     id: 's_' + stage + '_' + cat + '_' + idx,
     name: it.name,
     must: !!it.must,
-    core: !!CORE_SET[it.name],
+    core: isCoreName(it.name),
     status: 0,
     decision: 0 // 默认从家带；竞品四态里的「到校买/到校再定」由用户自行切换
   }));
@@ -297,7 +239,7 @@ function migrate(state) {
         if ('done' in it) delete it.done;
         // core 快速模式标记：老数据无此字段，按名称白名单补标（不影响勾选状态）
         if (typeof it.core !== 'boolean') {
-          const c = !!CORE_SET[it.name];
+          const c = isCoreName(it.name);
           it.core = c;
           if (c) touched = true; // 仅 true 时回写，false 用默认值即可，减少写盘
         }
@@ -330,7 +272,7 @@ function read() {
     // ignore
   }
   // 首启：内存里建好种子即可满足渲染，写盘延后到异步 wx.setStorage，
-  // 避免同步 setStorageSync（4 学段 × 75 项）阻塞首屏。写盘失败仅影响持久化，
+  // 避免同步 setStorageSync（4 学段 × 172 项）阻塞首屏。写盘失败仅影响持久化，
   // 下次启动重新建种（幂等、无副作用），不影响本次会话内存展示。
   const seed = buildSeed();
   _cache = seed;
@@ -515,7 +457,7 @@ function computeStageProgress(stage, coreOnly) {
 function computeAllStages(coreOnly) {
   return STAGE_KEYS.map((stage) => ({
     key: stage,
-    percent: computeStageProgress(stage).percent
+    percent: computeStageProgress(stage, coreOnly).percent
   }));
 }
 

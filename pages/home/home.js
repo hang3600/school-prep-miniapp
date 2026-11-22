@@ -64,7 +64,7 @@ Page({
     // 首页清单预览卡：首屏直接展示真实必带物品，证明「替你想到了」。
     // 开启后 preview-card 进入首屏；如需 A/B 对比可临时改回 false。
     showPreview: true,
-    // 快速模式：只显示 20 件核心必带物品（关闭则显示全部 ~75 件）
+    // 快速模式：只显示 20 件核心必带物品（关闭则显示全部 172 件）
     coreMode: false,
     totalPercent: 0,
     totalCount: 0,
@@ -262,7 +262,7 @@ Page({
 
   // 首页承接主入口：直接进入清单（默认跳到下一个待整理分类，全部完成则回首个分类）
   onStartTap() {
-    const cat = store.nextIncompleteCat(store.getStage(), null) || 'id';
+    const cat = store.nextIncompleteCat(store.getStage(), null, store.getCoreMode()) || 'id';
     wx.navigateTo({ url: '/pages/checklist/checklist?cat=' + cat });
   },
 

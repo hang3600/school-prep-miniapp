@@ -205,7 +205,7 @@
 }
 .grid {
   display: grid;
-  /* 7 个分类（含军训）：4 列排布 4+3，比 3 列的 3+3+1 更整齐 */
+  /* 8 个分类（含药品健康、军训）：4 列直显 4+4 两行，不横滑 */
   grid-template-columns: repeat(4, 1fr);
   gap: 16rpx;
 }

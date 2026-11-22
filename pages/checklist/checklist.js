@@ -235,7 +235,7 @@ Page({
 
     // 下一步引导：recalc 不持有 stage，需从 store 取当前学段；找当前分类之外第一个未装包分类
     const stage = store.getStage();
-    const next = store.nextIncompleteCat(stage, this.data.cat);
+    const next = store.nextIncompleteCat(stage, this.data.cat, store.getCoreMode());
     this.setData({
       readyCount: ready,
       packedCount: packed,

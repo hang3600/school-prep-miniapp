@@ -12,15 +12,19 @@ function run() {
     const env = makeEnv(state);
     const store = env.load('utils/store.js');
 
-    assert('种子分类 7 个（含军训）', store.CAT_KEYS.length === 7 && store.CAT_KEYS.indexOf('mil') !== -1);
+    assert('种子分类 8 个（含药品健康、军训）', store.CAT_KEYS.length === 8
+      && store.CAT_KEYS.indexOf('med') !== -1 && store.CAT_KEYS.indexOf('mil') !== -1);
     assert('学段 4 个', store.STAGE_KEYS.length === 4);
-    assert('军训种子 10 条', store.getChecklist('college', 'mil').length === 10);
+    assert('军训种子 16 条', store.getChecklist('college', 'mil').length === 16);
+    assert('药品健康种子 16 条', store.getChecklist('college', 'med').length === 16);
 
     let total = 0;
     store.CAT_KEYS.forEach((c) => {
       total += store.getChecklist('college', c).length;
     });
-    assert('单学段种子共 75 件', total === 75, total);
+    assert('单学段种子共 172 件', total === 172, total);
+    assert('八类件数 15/33/19/46/13/14/16/16',
+      store.CAT_KEYS.map((c) => store.getChecklist('college', c).length).join('/') === '15/33/19/46/13/14/16/16');
     assert('种子默认 status=0', store.getChecklist('college', 'id').every((it) => it.status === 0));
   }
 
@@ -34,12 +38,12 @@ function run() {
 
     // 初始：全未装包 → 第一个未完成是 id
     assert('初始 nextIncompleteCat(null)=id', store.nextIncompleteCat(STAGE, null) === 'id');
-    assert('跳过当前 id → soap', store.nextIncompleteCat(STAGE, 'id') === 'soap');
+    assert('跳过当前 id → bed（八类新顺序与宫格同序）', store.nextIncompleteCat(STAGE, 'id') === 'bed');
 
-    // 装包 id：跳过 id 后第一个未完成是 soap
+    // 装包 id：跳过 id 后第一个未完成是 bed
     pack('id');
-    assert('id 装包后 nextIncompleteCat(id)=soap', store.nextIncompleteCat(STAGE, 'id') === 'soap');
-    assert('id 装包后 nextIncompleteCat(null)=soap', store.nextIncompleteCat(STAGE, null) === 'soap');
+    assert('id 装包后 nextIncompleteCat(id)=bed', store.nextIncompleteCat(STAGE, 'id') === 'bed');
+    assert('id 装包后 nextIncompleteCat(null)=bed', store.nextIncompleteCat(STAGE, null) === 'bed');
 
     // 仅保留 id 未完成：重置后只装「除 id 外」的分类（id 此刻归 0，其余装包）
     store.resetStageProgress(STAGE);
@@ -61,23 +65,24 @@ function run() {
     const STAGE = 'college';
     const pack = (c) => store.getChecklist(STAGE, c).forEach((it) => { store.cycleItem(STAGE, c, it.id); store.cycleItem(STAGE, c, it.id); });
 
-    // 用户场景：证件装包，其余（含生活用品、军训）全未装，当前在「衣物」
+    // 用户场景：证件装包，其余（含洗漱、军训）全未装，当前在「衣物鞋饰」
     store.resetStageProgress(STAGE);
     pack('id');
-    // 旧逻辑：在 shirt 中扫描跳过自身后，最前未完成的「生活用品」会被误当下一步
-    assert('衣物中 下一步=军训(向前顺位，不再回跳生活用品)', store.nextIncompleteCat(STAGE, 'shirt') === 'mil');
+    // 旧逻辑：在 shirt 中扫描跳过自身后，最前未完成的分类会被误当下一步；新顺序下从 shirt 向前顺位是 soap
+    assert('衣物中 下一步=洗漱护理(向前顺位，不再回跳证件)', store.nextIncompleteCat(STAGE, 'shirt') === 'soap');
 
     // 回绕：衣物之后全部装包、仅衣物自身未完成 → 自身排除，返回 null
-    ['soap', 'book', 'bed', 'laptop', 'mil'].forEach(pack);
+    // id 已在上方装包，这里不再重复 pack（重复会 2→0→1，反而变回"未装包"）
+    ['bed', 'soap', 'book', 'laptop', 'med', 'mil'].forEach(pack);
     const shirt = store.getChecklist(STAGE, 'shirt');
     store.cycleItem(STAGE, 'shirt', shirt[0].id);
     store.cycleItem(STAGE, 'shirt', shirt[0].id); // 衣物只装第一件，其余未装
     assert('仅衣物未完成时 衣物出发=null', store.nextIncompleteCat(STAGE, 'shirt') === null);
 
-    // 中部分类向前：在「床品」中、其后「数码」未完成 → 返回 数码（非回跳证件）
+    // 中部分类向前：在「住宿寝室」中、其后「衣物鞋饰」未完成 → 返回 shirt（非回跳证件）
     store.resetStageProgress(STAGE);
     pack('id');
-    assert('床品中 下一步=数码(向前)', store.nextIncompleteCat(STAGE, 'bed') === 'laptop');
+    assert('住宿寝室中 下一步=衣物鞋饰(向前)', store.nextIncompleteCat(STAGE, 'bed') === 'shirt');
   }
 
   // ---------- 2. 内存缓存（本次审计修复项）----------
@@ -91,7 +96,7 @@ function run() {
     const afterFirst = state.storageReads;
     assert('首次读取触发 1 次 getStorageSync', afterFirst === 1, afterFirst);
 
-    // 模拟首页 refresh() 的调用规模：1 次 getStage + 1 次进度 + 7 次分类计数 + 1 次日期
+    // 模拟首页 refresh() 的调用规模：1 次 getStage + 1 次进度 + 8 次分类计数 + 1 次日期
     store.getStage();
     store.computeStageProgress('college');
     store.CAT_KEYS.forEach((c) => store.getChecklist('college', c));
@@ -124,7 +129,7 @@ function run() {
     assert('三击 → 回到未备(0)', store.getChecklist('college', 'id')[0].status === 0);
 
     store.cycleItem('college', 'id', 'not_exist');
-    assert('cycleItem 不存在 id 无副作用', store.getChecklist('college', 'id').length === 13);
+    assert('cycleItem 不存在 id 无副作用', store.getChecklist('college', 'id').length === 15);
   }
 
   // ---------- 4. 进度口径 ----------
@@ -134,7 +139,7 @@ function run() {
     const store = env.load('utils/store.js');
 
     const p0 = store.computeStageProgress('college');
-    assert('初始进度 0%', p0.percent === 0 && p0.total === 75, JSON.stringify(p0));
+    assert('初始进度 0%', p0.percent === 0 && p0.total === 172, JSON.stringify(p0));
 
     const id = store.getChecklist('college', 'id')[0].id;
     store.cycleItem('college', 'id', id); // →1 已备好
@@ -185,10 +190,10 @@ function run() {
     assert('迁移 done=true → status=2', migrated[0].status === 2);
     assert('迁移 done=false → status=0', migrated[1].status === 0);
     assert('迁移后移除旧 done 字段', !('done' in migrated[0]));
-    assert('缺分类全量补种（mil 10 条）', store.getChecklist('college', 'mil').length === 10);
-    // 已有分类增量补种：id 原有 2 条自定义 + 序号 ≥ LEGACY_SEED_COUNTS.id(7) 的 6 条新种子 = 8
+    assert('缺分类全量补种（mil 16 条）', store.getChecklist('college', 'mil').length === 16);
+    // 已有分类增量补种：id 原有 2 条自定义 + 序号 ≥ LEGACY_SEED_COUNTS.id(7) 的 8 条新种子 = 10
     // （序号 0-6 的老种子不补，避免用户已删除的物品复活——这是设计意图）
-    assert('已有分类增量补种（2 自定义 + 6 新种子）', store.getChecklist('college', 'id').length === 8,
+    assert('已有分类增量补种（2 自定义 + 8 新种子）', store.getChecklist('college', 'id').length === 10,
       store.getChecklist('college', 'id').length);
     const ids = store.getChecklist('college', 'id').map((x) => x.id);
     assert('老种子序号 0-6 不补种', !ids.includes('s_college_id_0') && !ids.includes('s_college_id_6'));
@@ -221,7 +226,7 @@ function run() {
     // 老分界 id=7：序号 0-6 是老种子（不复活），7-12 是新种子（应补种）
     assert('已删旧种子序号 3-6 不复活', !ids.includes('s_college_id_3') && !ids.includes('s_college_id_6'));
     assert('新种子序号 7+ 已补种', ids.includes('s_college_id_7') && ids.includes('s_college_id_12'));
-    assert('总数 = 3 保留 + 6 新种子', arr.length === 9, arr.length);
+    assert('总数 = 3 保留 + 8 新种子', arr.length === 11, arr.length);
   }
 
   // ---------- 8. 开学日期 ----------
@@ -275,20 +280,20 @@ function run() {
     const middle = namesOf('middle');
     const primary = namesOf('primary');
 
-    assert('大学基准仍为 75 件', college.length === 75, college.length);
+    assert('大学基准仍为 172 件', college.length === 172, college.length);
     assert('四学段清单互不相同', college.join('|') !== high.join('|')
       && high.join('|') !== middle.join('|') && middle.join('|') !== primary.join('|'));
     assert('高中有专属物品（错题本）', high.indexOf('错题本 ×2') !== -1);
     assert('初中有专属校服', middle.indexOf('校服 ×2') !== -1);
     assert('小学有姓名贴', primary.indexOf('姓名贴 / 姓名章') !== -1);
     assert('小学已排除笔记本电脑', primary.indexOf('笔记本电脑') === -1);
-    assert('小学已排除军训腰带', primary.indexOf('腰带（配军训服）') === -1);
-    assert('共用物品在各学段保留', high.indexOf('身份证') !== -1 && primary.indexOf('身份证') !== -1);
+    assert('小学已排除手机与军训鞋垫', primary.indexOf('手机') === -1 && primary.indexOf('军训鞋垫') === -1);
+    assert('共用物品在各学段保留', high.indexOf('身份证原件') !== -1 && primary.indexOf('身份证原件') !== -1);
 
     // id 稳定性：同一分类同一序号在不同学段指向同名物品（迁移锚点不能错位）
     const c0 = store.getChecklist('college', 'id')[0];
     const p0 = store.getChecklist('primary', 'id')[0];
-    assert('学段间 id 序号锚点名称一致', c0.name === p0.name && c0.name === '身份证');
+    assert('学段间 id 序号锚点名称一致', c0.name === p0.name && c0.name === '身份证原件');
   }
 
   // ---------- 11. 核心 20 件快速模式 ----------
@@ -302,7 +307,7 @@ function run() {
     const core = store.computeStageProgress('college', true);
     assert('核心模式 20 件', core.total === 20, core.total);
     assert('核心清单少于全量', core.total < full.total);
-    assert('全量仍为 75 件', full.total === 75, full.total);
+    assert('全量仍为 172 件', full.total === 172, full.total);
     assert('核心物品均带 core 标记', store.getChecklist('college', 'id', true).every((it) => it.core === true));
     assert('核心模式过滤非核心', store.getChecklist('college', 'id', true).length < store.getChecklist('college', 'id').length);
 
@@ -336,7 +341,7 @@ function run() {
     assert('老用户已装包状态保留', a0 && a0.status === 2);
     assert('老用户核心标记按名称补全', a0 && a0.core === true);
     assert('老用户自动补全新种子', idList.length > 2);
-    assert('迁移后序号锚点不变', idList[0].name === '身份证');
+    assert('迁移后序号锚点不变（老数据保留原名）', idList[0].name === '身份证');
   }
 
   // ---------- 13. 一次性学段清理（stageExcludeV1）----------
@@ -348,13 +353,13 @@ function run() {
         primary: {
           laptop: [
             { id: 's_primary_laptop_0', name: '笔记本电脑', must: true, status: 2 },
-            { id: 's_primary_laptop_2', name: '插线板', must: true, status: 1 },
+            { id: 's_primary_laptop_2', name: '多孔插排', must: true, status: 1 },
             { id: 's_primary_laptop_3', name: '充电宝', must: true, status: 2 },
             { id: 'c_12345_1', name: '笔记本电脑', must: false, status: 1 }
           ],
           mil: [
-            { id: 's_primary_mil_8', name: '腰带（配军训服）', must: false, status: 2 },
-            { id: 's_primary_mil_0', name: '防晒霜（SPF50+）', must: true, status: 1 }
+            { id: 's_primary_mil_1', name: '替换鞋垫', must: false, status: 2 },
+            { id: 's_primary_mil_7', name: '纸巾和湿巾', must: true, status: 1 }
           ]
         }
       }
@@ -366,12 +371,12 @@ function run() {
     const lap = store.getChecklist('primary', 'laptop');
     const mil = store.getChecklist('primary', 'mil');
     assert('清理: 小学种子笔记本电脑已删', !lap.some((x) => x.id === 's_primary_laptop_0'));
-    assert('清理: 小学种子插线板已删', !lap.some((x) => x.id === 's_primary_laptop_2'));
-    assert('清理: 小学种子军训腰带已删', !mil.some((x) => x.id === 's_primary_mil_8'));
+    assert('清理: 小学种子多孔插排已删', !lap.some((x) => x.id === 's_primary_laptop_2'));
+    assert('清理: 小学种子替换鞋垫已删', !mil.some((x) => x.id === 's_primary_mil_1'));
     assert('清理: 非排除种子保留且勾选不变', (lap.find((x) => x.id === 's_primary_laptop_3') || {}).status === 2);
-    assert('清理: 未排除的军训物品保留', (mil.find((x) => x.id === 's_primary_mil_0') || {}).status === 1);
+    assert('清理: 未排除的军训物品保留', (mil.find((x) => x.id === 's_primary_mil_7') || {}).status === 1);
     assert('清理: 用户自定义同名物品保留', (lap.find((x) => x.id === 'c_12345_1') || {}).name === '笔记本电脑');
-    assert('清理: 被删项未被增量补种回灌', !lap.some((x) => x.name === '插线板' && x.id.indexOf('s_') === 0));
+    assert('清理: 被删项未被增量补种回灌', !lap.some((x) => x.name === '多孔插排' && x.id.indexOf('s_') === 0));
     assert('清理: 迁移标记已写入', base.storage.schoolprep_v1.stageExcludeV1 === true);
 
     // 幂等：标记已打后，即使 storage 里再出现同名种子项也不再清理

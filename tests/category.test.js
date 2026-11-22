@@ -13,7 +13,7 @@ function run() {
   page.onReady();
 
   // ---------- 1. 无关键词 ----------
-  assert('无关键词 → 7 个分类', page.data.categories.length === 7, page.data.categories.length);
+  assert('无关键词 → 8 个分类', page.data.categories.length === 8, page.data.categories.length);
 
   // ---------- 2. 按分类名过滤 ----------
   page.onSearch({ detail: { value: '军训' } });
@@ -23,7 +23,8 @@ function run() {
   // ---------- 3. 按物品名过滤（跨分类命中）----------
   page.onSearch({ detail: { value: '防晒' } });
   const keys = page.data.categories.map((c) => c.key).sort();
-  assert('搜「防晒」→ 跨分类命中（生活 + 军训）', keys.length === 2 && keys[0] === 'mil' && keys[1] === 'soap', keys);
+  assert('搜「防晒」→ 跨分类命中（衣物防晒衣 + 洗漱防晒霜 + 军训）',
+    keys.length === 3 && keys[0] === 'mil' && keys[1] === 'shirt' && keys[2] === 'soap', keys);
 
   // ---------- 4. 按描述过滤 ----------
   page.onSearch({ detail: { value: '文具' } });
@@ -36,7 +37,7 @@ function run() {
 
   // ---------- 6. 清空恢复 ----------
   page.onSearch({ detail: { value: '' } });
-  assert('清空关键词 → 恢复 7 分类', page.data.categories.length === 7, page.data.categories.length);
+  assert('清空关键词 → 恢复 8 分类', page.data.categories.length === 8, page.data.categories.length);
 
   // ---------- 7. 最近添加 ----------
   assert('初始无自定义物品', page.data.recent.length === 0);
@@ -51,7 +52,7 @@ function run() {
 
   // ---------- 8. 分类计数随自定义物品更新 ----------
   const bookCat = page.data.categories.find((c) => c.key === 'book');
-  assert('分类计数含自定义物品（11 + 1）', bookCat.count === 12, bookCat.count);
+  assert('分类计数含自定义物品（13 + 1）', bookCat.count === 14, bookCat.count);
 }
 
 module.exports = { run, name: 'category' };
