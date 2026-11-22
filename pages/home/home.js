@@ -285,6 +285,11 @@ Page({
     wx.navigateTo({ url: '/pages/checklist/checklist?cat=' + key });
   },
 
+  // 「全部 7 类 ›」：分类页是 tabBar 页，须用 switchTab（一屏重构后分类宫格收为横滑胶囊，完整入口在此）
+  onCategoryMore() {
+    wx.switchTab({ url: '/pages/category/category' });
+  },
+
   // 转发（好友/群聊）：标题与路径单源在 utils/share.js
   onShareAppMessage() {
     return share.shareApp('home');
