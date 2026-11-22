@@ -25,7 +25,7 @@
 .hero-title {
   display: block;
   font-size: var(--fs-sub);
-  color: var(--gray);
+  color: var(--ink-2); /* 打磨环R1: 原 --gray 在暖白底仅 3.34:1, 未达 4.5:1 可读性底线 */
   letter-spacing: 1rpx;
 }
 .hero-num-row {
@@ -53,7 +53,7 @@
 .hero-date {
   display: block;
   font-size: var(--fs-indicator);
-  color: var(--gray);
+  color: var(--ink-2); /* 打磨环R1: 可读性 3.34→6.68:1 */
   margin-top: 12rpx;
 }
 
@@ -121,12 +121,12 @@
 .hero-progress-label {
   display: block;
   font-size: var(--fs-indicator);
-  color: var(--gray);
+  color: var(--ink-2); /* 打磨环R1: 可读性 3.34→6.68:1 */
 }
 .hero-desc {
   display: block;
   font-size: var(--fs-indicator);
-  color: var(--gray);
+  color: var(--ink-2); /* 打磨环R1: 可读性 3.34→6.68:1 */
   margin-top: 8rpx;
 }
 .hero-track {
@@ -282,6 +282,7 @@
   font-size: 26rpx;
   line-height: 1.7;
   color: #5a6478;
+  text-wrap: pretty; /* 打磨环R1: 避免末行孤字（不支持的基础库自动降级，无害） */
 }
 
 /* ===== 首次学段引导弹层（自定义半屏 2×2 卡片） ===== */

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>首页落地还原 · 打磨环</title>
+<style>
+  /* rpx → px：390/750 = 0.52；令牌值来自 app.wxss + home.wxss 实测 */
+  :root{
+    --brand:#2F8F6B; --brand-deep:#247454; --brand-soft:#E7F3ED;
+    --accent:#F2A65A; --gray:#8C8A80; --ink:#242922; --ink-2:#5C5A50;
+    --bg:#F7F6F1; --border:#E6E4DB;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:-apple-system,"PingFang SC",sans-serif; background:#ddd; display:flex; gap:24px; padding:24px; justify-content:center;}
+  .phone{width:390px; height:844px; background:linear-gradient(180deg,#FBFBF8,#F7F6F1); overflow-y:auto; position:relative; flex-shrink:0;}
+  .phone::-webkit-scrollbar{display:none}
+  .statusbar{height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:13px; font-weight:600; color:var(--ink);}
+  .nav{height:40px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:var(--ink);}
+  .content-inner{padding:0 14.6px; padding-bottom:70px; display:flex; flex-direction:column; gap:16.1px;}
+
+  /* Hero */
+  .hero{padding:4.2px 0 2px;}
+  .hero-title{display:block; font-size:13px; color:var(--gray); letter-spacing:.5px;}
+  .hero-num-row{display:flex; align-items:baseline; margin-top:5.2px;}
+  .hero-num{font-size:52px; font-weight:500; line-height:1; color:var(--brand);}
+  .hero-pct{font-size:18.2px; font-weight:500; color:var(--gray); margin-left:6.2px;}
+  .hero-date{display:block; font-size:12px; color:var(--gray); margin-top:6.2px;}
+  .band{display:flex; gap:4.2px; margin-top:15.6px;}
+  .band-seg{flex:1; height:7.3px; border-radius:3.6px; background:#E4E6E0;}
+  .band-seg.active{background:var(--brand);}
+  .band-labels{display:flex; gap:4.2px; margin-top:7.3px;}
+  .band-label{flex:1; text-align:center; font-size:11.4px; color:var(--gray);}
+  .band-label.active{color:var(--brand); font-weight:600;}
+  .advice-row{display:flex; align-items:flex-start; gap:8.3px; margin-top:14.6px; padding:10.4px 0; border-top:1px solid var(--border);}
+  .advice-text{flex:1; font-size:14px; color:var(--ink-2); line-height:1.55;}
+  .cd-edit{font-size:11.4px; color:var(--brand); flex-shrink:0; padding-top:1px;}
+  .hero-progress{margin-top:4.2px;}
+  .hero-progress-label{display:block; font-size:12px; color:var(--gray);}
+  .hero-track{height:4.2px; background:#EDEFE9; border-radius:2px; margin-top:7.3px; overflow:hidden;}
+  .hero-fill{height:100%; background:var(--brand); border-radius:2px; width:35%;}
+
+  /* section title */
+  .section-title{font-size:15.1px; font-weight:600; color:var(--ink); margin-top:4.2px;}
+
+  /* preview */
+  .preview-card{margin-top:16.1px; background:#fff; border:1px solid var(--border); border-radius:16.1px; padding:11.4px 12.5px 12.5px; box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .preview-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8.3px;}
+  .preview-title{font-size:13.5px; font-weight:700; color:var(--ink);}
+  .preview-more{font-size:12px; color:var(--brand);}
+  .preview-scroll{display:flex; gap:6.2px; overflow:hidden; white-space:nowrap;}
+  .chip{display:inline-flex; align-items:center; gap:5.2px; height:27px; padding:0 10.4px; border-radius:13.5px; background:var(--brand-soft); flex-shrink:0;}
+  .chip.opt{background:#F2F3F5;} .chip.done{background:#F2F3F5;}
+  .chip-name{font-size:12.5px; color:var(--brand-deep); font-weight:600;}
+  .chip.opt .chip-name,.chip.done .chip-name{color:var(--gray); font-weight:500;}
+  .chip.done .chip-name{text-decoration:line-through;}
+  .dot{width:7.3px; height:7.3px; border-radius:50%; background:#C9CDD4; flex-shrink:0;}
+  .dot.st1{background:var(--brand);}
+  .chip-more{background:transparent; border:1px solid var(--border); font-size:12.5px; color:var(--gray); font-weight:500;}
+
+  /* stage seg */
+  .stage-seg{display:flex; gap:7.8px; background:#fff; border-radius:35.9px; padding:4.2px; box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .stage-pill{flex:1; height:33.3px; display:flex; align-items:center; justify-content:center; border-radius:26px; font-size:14px; color:var(--gray);}
+  .stage-pill.active{background:var(--brand); color:#fff; font-weight:600;}
+
+  /* scope */
+  .scope-row{display:flex; align-items:center; justify-content:space-between; margin-top:-4.2px;}
+  .scope-label{font-size:13px; color:var(--gray);}
+  .scope-seg{display:flex; gap:4.2px; background:var(--brand-soft); border-radius:35.9px; padding:3.1px;}
+  .scope-pill{padding:6.2px 12.5px; border-radius:22.9px; font-size:12px; color:var(--brand-deep);}
+  .scope-pill.active{background:var(--brand); color:#fff; font-weight:600;}
+
+  /* grid */
+  .grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8.3px;}
+  .grid-cell{background:#fff; border-radius:16.1px; padding:10.4px 4.2px; display:flex; flex-direction:column; align-items:center; gap:5.2px; box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .grid-icon{width:41.6px; height:41.6px; border-radius:10.4px; display:flex; align-items:center; justify-content:center; font-size:20px;}
+  .grid-label{font-size:12px; color:var(--ink); white-space:nowrap;}
+  .grid-count{font-size:11.4px; color:var(--gray);}
+
+  /* CTA */
+  .cta-btn{background:linear-gradient(135deg,#3fa37d,#247454); border-radius:11.4px; padding:15.6px 16.6px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 14px rgba(47,143,107,.25);}
+  .cta-title{font-size:17.7px; font-weight:700; color:#fff; line-height:1.1;}
+  .cta-sub{font-size:12px; color:rgba(255,255,255,.88); margin-top:4.2px;}
+  .cta-arrow{font-size:25px; color:#fff; font-weight:700;}
+
+  /* tips */
+  .tips-card{margin-top:16.1px; background:#fff; border:1px solid var(--border); border-radius:16.1px; padding:15.6px; display:flex; flex-direction:column; gap:9.4px; box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .tips-head{display:flex; align-items:center; gap:7.3px;}
+  .tips-title{font-size:14.6px; font-weight:700; color:var(--ink);}
+  .tips-text{font-size:13.5px; line-height:1.7; color:#5a6478;}
+
+  /* tabbar */
+  .tabbar{position:sticky; bottom:0; height:56px; background:#fff; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-around; font-size:11px; color:var(--gray);}
+  .tabbar .on{color:var(--brand); font-weight:600;}
+  .cap{font-size:10px; color:#888; text-align:center; margin-top:-16px;}
+</style>
+</head>
+<body>
+<div>
+<div class="cap">① 首屏（未滚动）· 390×844</div>
+<div class="phone">
+  <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div>
+  <div class="nav">开学准备</div>
+  <div class="content-inner">
+
+    <div class="hero">
+      <text class="hero-title">开学倒计时</text>
+      <div class="hero-num-row"><span class="hero-num">23</span><span class="hero-pct">天后开学</span></div>
+      <text class="hero-date">12 月 15 日 · 星期二</text>
+      <div class="band">
+        <div class="band-seg active"></div><div class="band-seg"></div><div class="band-seg"></div><div class="band-seg"></div>
+      </div>
+      <div class="band-labels">
+        <span class="band-label active">从容期</span><span class="band-label">采购期</span><span class="band-label">打包期</span><span class="band-label">出发</span>
+      </div>
+      <div class="advice-row">
+        <span class="advice-text">从容期：先把证件照、复印件这些要跑腿的办掉，行李慢慢置办。</span>
+        <span class="cd-edit">修改</span>
+      </div>
+      <div class="hero-progress">
+        <span class="hero-progress-label">已整理 26 件 · 待准备 49 件</span>
+        <div class="hero-track"><div class="hero-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="preview-card">
+      <div class="preview-head"><span class="preview-title">清单抢先看 · 大学 · 75 件</span><span class="preview-more">去整理 ›</span></div>
+      <div class="preview-scroll">
+        <div class="chip"><span class="dot st1"></span><span class="chip-name">录取通知书</span></div>
+        <div class="chip"><span class="dot"></span><span class="chip-name">身份证</span></div>
+        <div class="chip"><span class="dot"></span><span class="chip-name">学生证</span></div>
+        <div class="chip"><span class="dot"></span><span class="chip-name">户口本</span></div>
+        <div class="chip done"><span class="dot"></span><span class="chip-name">证件照</span></div>
+        <div class="chip-more">+70 件 ›</div>
+      </div>
+    </div>
+
+    <text class="section-title">选择学段</text>
+    <div class="stage-seg">
+      <div class="stage-pill active">大学</div><div class="stage-pill">高中</div><div class="stage-pill">初中</div><div class="stage-pill">小学</div>
+    </div>
+
+    <div class="scope-row">
+      <span class="scope-label">清单范围</span>
+      <div class="scope-seg"><span class="scope-pill">核心 20 件</span><span class="scope-pill active">完整清单</span></div>
+    </div>
+
+    <text class="section-title">入学物品分类</text>
+    <div class="grid">
+      <div class="grid-cell"><div class="grid-icon" style="background:#E7F3ED">🪪</div><span class="grid-label">证件</span><span class="grid-count">12</span></div>
+      <div class="grid-cell"><div class="grid-icon" style="background:#E6F7EE">🧴</div><span class="grid-label">洗漱</span><span class="grid-count">9</span></div>
+      <div class="grid-cell"><div class="grid-icon" style="background:#FFF4DC">✏️</div><span class="grid-label">文具</span><span class="grid-count">14</span></div>
+      <div class="grid-cell"><div class="grid-icon" style="background:#F0EBFF">🛏️</div><span class="grid-label">床品</span><span class="grid-count">8</span></div>
+      <div class="grid-cell"><div class="grid-icon" style="background:#FDF1E5">💻</div><span class="grid-label">数码</span><span class="grid-count">11</span></div>
+      <div class="grid-cell"><div class="grid-icon" style="background:#FFEAF1">👕</div><span class="grid-label">衣物</span><span class="grid-count">13</span></div>
+      <div class="grid-cell"><div class="grid-icon" style="background:#FFE4E1">🎖️</div><span class="grid-label">军训</span><span class="grid-count">8</span></div>
+    </div>
+
+    <div class="cta-btn">
+      <div><div class="cta-title">继续整理</div><div class="cta-sub">大学 · 已按必带/选带分好</div></div>
+      <span class="cta-arrow">›</span>
+    </div>
+
+    <div class="tips-card">
+      <div class="tips-head"><span>🎒</span><span class="tips-title">今日开学小贴士</span></div>
+      <div class="tips-text">证件类建议用透明文件袋分类装好，报到当天抽拿最方便。</div>
+    </div>
+
+  </div>
+  <div class="tabbar"><span>🏠<br>首页</span><span>📋<br>清单</span><span>📊<br>进度</span><span>👤<br>我的</span></div>
+</div>
+</div>
+</body>
+</html>
