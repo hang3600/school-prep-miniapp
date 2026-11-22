@@ -18,101 +18,115 @@
   gap: var(--sp-gap);
 }
 
-/* ===== Hero · B 开学时间带（白底，绿时间带为签名物件） ===== */
+/* ===== Hero · 极简 B（2026-11-22 紧凑重设计）=====
+   纵向仅 3 行：① 左上主信息 + 右上设置时间 ② 细时间尺 + 建议 ③ 整理进度。
+   主信息集中左上、设置入口常驻右上，数字缩到 <100rpx，整体高度较旧版缩约 40%。 */
 .hero {
   padding: 8rpx 0 4rpx;
 }
-.hero-title {
+
+/* 顶行：左上主信息 / 右上设置时间 */
+.hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+.hero-main {
+  min-width: 0;
+  flex: 1;
+}
+.hero-eyebrow {
   display: block;
-  font-size: var(--fs-sub);
-  color: var(--ink-2); /* 打磨环R1: 原 --gray 在暖白底仅 3.34:1, 未达 4.5:1 可读性底线 */
+  font-size: var(--fs-indicator);
+  color: var(--ink-2);
   letter-spacing: 1rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .hero-num-row {
   display: flex;
-  align-items: baseline;
-  margin-top: 10rpx;
+  align-items: center;
+  gap: 10rpx;
+  margin-top: 6rpx;
 }
 .hero-num {
-  font-size: 100rpx;
+  font-size: 92rpx; /* B 稿 46px：较旧版 100rpx 缩 8rpx，视觉仍为主角 */
   font-weight: 500;
   line-height: 1;
   color: var(--brand);
 }
-.hero-pct {
-  font-size: var(--fs-title);
+.hero-unit {
+  font-size: 30rpx;
   font-weight: 500;
-  color: var(--gray);
-  margin-left: 12rpx;
+  color: var(--ink-2);
+}
+.hero-phase-badge {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #B5702E;
+  background: #FDF1E5;
+  padding: 5rpx 14rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
 }
 .hero-num-set {
   font-size: 44rpx;
   font-weight: 600;
   color: var(--brand);
 }
-.hero-date {
-  display: block;
-  font-size: var(--fs-indicator);
-  color: var(--ink-2); /* 打磨环R1: 可读性 3.34→6.68:1 */
-  margin-top: 12rpx;
-}
 
-/* 时间带：四段等宽胶囊，当前段实心绿，其余浅灰 */
+/* 右上设置时间按钮：小图标常驻，picker 绑定在 wxml 外层 */
+.hero-setting {
+  width: 64rpx;
+  height: 64rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-soft);
+  border-radius: 50%;
+  transition: opacity 0.15s ease;
+}
+.hero-setting-icon {
+  width: 32rpx;
+  height: 32rpx;
+}
+.cd-press { opacity: 0.7; }
+
+/* 第二行：细时间尺（固定宽）+ 建议单行截断 */
+.hero-subrow {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 16rpx;
+}
 .band {
   display: flex;
-  gap: 8rpx;
-  margin-top: 30rpx;
+  gap: 6rpx;
+  width: 200rpx;
+  flex-shrink: 0;
   transition: opacity 0.15s ease;
 }
 .band-seg {
   flex: 1;
-  height: 14rpx;
-  border-radius: 7rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
   background: #E4E6E0;
 }
 .band-seg.active {
   background: var(--brand);
 }
-.band-labels {
-  display: flex;
-  gap: 8rpx;
-  margin-top: 14rpx;
-}
-.band-label {
-  flex: 1;
-  text-align: center;
-  font-size: 22rpx;
-  color: var(--gray);
-}
-.band-label.active {
-  color: var(--brand);
-  font-weight: 600;
-}
-
-/* 当前阶段建议：可点改日期 */
-.advice-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 16rpx;
-  margin-top: 28rpx;
-  padding: 20rpx 0;
-  border-top: 1rpx solid var(--border);
-  transition: opacity 0.15s ease;
-}
-.advice-text {
+.advice-inline {
   flex: 1;
   min-width: 0;
-  font-size: var(--fs-body);
+  font-size: var(--fs-indicator);
   color: var(--ink-2);
-  line-height: 1.55;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.cd-edit {
-  font-size: 22rpx;
-  color: var(--brand);
-  flex-shrink: 0;
-  padding-top: 2rpx;
-}
-.cd-press { opacity: 0.7; }
 
 /* 整理进度：一行带过 */
 .hero-progress {

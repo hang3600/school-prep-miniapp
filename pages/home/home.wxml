@@ -2,45 +2,42 @@
 
   <scroll-view class="content" scroll-y>
     <view class="content-inner">
-      <!-- Hero · B 开学时间带：大数字 + 四段时间带 + 当前阶段该做什么 -->
+      <!-- Hero · 极简 B：主信息集中左上，设置时间按钮提到右上角，纵向压到 3 行
+           2026-11-22 紧凑重设计：数字 46px 级 + 阶段徽章 + 细时间尺与建议同行 -->
       <view class="hero">
-        <text class="hero-title">开学倒计时</text>
+        <!-- 顶行：左上主信息 / 右上设置时间 -->
+        <view class="hero-top">
+          <view class="hero-main">
+            <text class="hero-eyebrow">距离开学{{schoolDateText ? ' · ' + schoolDateText : ''}}</text>
+            <view class="hero-num-row">
+              <block wx:if="{{daysLeft !== null}}">
+                <text class="hero-num num">{{daysLeft}}</text>
+                <text class="hero-unit">天</text>
+                <text class="hero-phase-badge" wx:if="{{activePhase >= 0}}">{{phaseBands[activePhase].label}}</text>
+              </block>
+              <text wx:else class="hero-num-set">{{countdownText}}</text>
+            </view>
+          </view>
 
-        <!-- 大数字：未设置日期时显示文字，设置后显示剩余天数 -->
-        <view class="hero-num-row">
-          <block wx:if="{{daysLeft !== null}}">
-            <text class="hero-num num">{{daysLeft}}</text>
-            <text class="hero-pct">天后开学</text>
-          </block>
-          <text wx:else class="hero-num-set">{{countdownText}}</text>
+          <!-- 右上设置时间按钮：picker 绑定不变，仅入口从建议条尾部上提到此 -->
+          <picker mode="date" start="{{dateStart}}" end="{{dateEnd}}" bindchange="onDateChange">
+            <view class="hero-setting" hover-class="cd-press" hover-stay-time="60" aria-label="{{cdEdit}}开学日期">
+              <image class="hero-setting-icon" src="/images/icons/ic-settings.svg" mode="aspectFit" />
+            </view>
+          </picker>
         </view>
-        <text class="hero-date" wx:if="{{schoolDateText}}">{{schoolDateText}}</text>
 
-        <!-- 四段时间带：当前段实心绿，其余浅灰；未设置日期时全部灰 -->
-        <picker mode="date" start="{{dateStart}}" end="{{dateEnd}}" bindchange="onDateChange">
-          <view class="band" hover-class="cd-press" hover-stay-time="60">
+        <!-- 第二行：四段细时间尺 + 当前阶段建议（同行，建议单行截断） -->
+        <view class="hero-subrow">
+          <view class="band">
             <view
               wx:for="{{phaseBands}}"
               wx:key="key"
               class="band-seg {{activePhase === index ? 'active' : ''}}"
             ></view>
           </view>
-        </picker>
-        <view class="band-labels">
-          <text
-            wx:for="{{phaseBands}}"
-            wx:key="key"
-            class="band-label {{activePhase === index ? 'active' : ''}}"
-          >{{item.label}}</text>
+          <text class="advice-inline">{{advice}}</text>
         </view>
-
-        <!-- 当前阶段该做什么：点击整行可改开学日期 -->
-        <picker mode="date" start="{{dateStart}}" end="{{dateEnd}}" bindchange="onDateChange">
-          <view class="advice-row" hover-class="cd-press" hover-stay-time="60">
-            <text class="advice-text">{{advice}}</text>
-            <text class="cd-edit">{{cdEdit}}</text>
-          </view>
-        </picker>
 
         <!-- 整理进度：一行带过，不抢倒计时的戏 -->
         <view class="hero-progress" wx:if="{{started}}">
